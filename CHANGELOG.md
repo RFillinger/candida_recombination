@@ -40,8 +40,6 @@
 
 * Make a Jupyter notebook for the `.git` repository.
 
-* Compare `genotypes` r/qtl output to mine.
-
 * Continue to fill out the `README`. I'll add more things to add here: 
 	1) STACKS pipeline preparation for data:
 		* pstacks - I used my `pstacks_automator_9.py` program
@@ -56,6 +54,15 @@
 ---
 
 # Completed changes: 
+
+### 11/8/2021
+
+* Completed manual curation of strange markers in both crosses. 
+
+* Moved main repository out of `code.osu.edu` and into [GitHub](https://github.com/RFillinger). 
+
+* Uploaded all data into GitHub
+
 
 ### 9/28/21
 
