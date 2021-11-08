@@ -1,0 +1,13 @@
+Progeny/Strain, allele, leel.prop
+Parent 1,1,1.0
+Parent 1,2,0.0
+Parent 1,n,0.0
+Parent 2,1,0.0
+Parent 2,2,1.0
+Parent 2,n,0.0
+Progeny 0,1,0.5625
+Progeny 0,2,0.4375
+Progeny 0,n,0.0
+,1,0.0
+,2,0.0
+,n,1.0
