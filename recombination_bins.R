@@ -114,7 +114,7 @@ geno_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positio
 
 
 recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positions,  
-							ymax = 80, tick_perct = 0.025, add_stdev_lines = 1, color = "gold", theme_color = "black" ) {
+							ymax = 1.5, tick_perct = 0.025, add_stdev_lines = 0, color = "gold", theme_color = "black" ) {
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
@@ -169,12 +169,12 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 
 	y_disp = -(ymax*tick_perct) + 15
 
-	p <- ggplot( data = df, aes( x = `univ.pos`, y = `recoms` )  ) + 
+	p <- ggplot( data = df, aes( x = `univ.pos`, y = `recom.by.mkr` )  ) + 
 		geom_col( color = "cyan" ) + 
 		# geom_vline( xintercept = chromosomes_delineations, size = 0.2, color = color ) +
 		theme_minimal() + 
 		theme( legend.position = "none", axis.text.x = element_blank() ) + 
-		labs( y = "Recombination events", x = NULL ) + 
+		labs( y = "Recombinations per Marker", x = NULL ) + 
 		ylim( c(0,ymax)) 
 
 	if ( add_stdev_lines ){

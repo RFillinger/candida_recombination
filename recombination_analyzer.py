@@ -413,15 +413,17 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	
 	# Move the data from the black list file and relabel them into a dictionary
 	ploid_dict = {}
+
 	for progeny in blk_list_array: 
 		name = progeny[0].strip()
 		chromosomes = progeny[1:]
 		ploid_dict[ name ] = []
-
 		# Begin adding chromosomes to the progeny
 		for character in chromosomes:
 			# Clean up the chromosome input from the file to make it easier to deal with, this can deffo be expanded 
+
 			character = character.replace("\"", "")
+
 			for long_name, abbrev_name in chr_labs.items():
 				# Check to see if the label 
 				if (character == abbrev_name): 
@@ -429,6 +431,7 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 					# ploid_dict[ name ].append( abbrev_name ) # Add the abbreviated name if you so choose
 				elif (character == long_name): 
 					ploid_dict[ name ].append( long_name )
+
 
 	# In the f2 file, find indexes of markers for each chromosome (or marker numbers, though indexes will be more flexible to other pieces of data)
 	chromosomes = f2_geno_array[0]
@@ -533,10 +536,7 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 					continue
 
 				new_marker_index = strange_idx_list.index(idx)
-				if prog_name in strange_prog_dict:
-					new_marker = strange_prog_dict[prog_name][new_marker_index].strip()
-				else: 
-					continue
+				new_marker = strange_prog_dict[prog_name][new_marker_index].strip()
 
 				if mkr_list[ idx ] == "-": 
 					continue
@@ -670,8 +670,6 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 					print( "Progeny length: ", len(progeny))
 					print( "Progeny:", progeny )
 
-				info_sub_dict[chr_arm]["marker" ].append( progeny[index] ) # Marker genotype identity
-				info_sub_dict[chr_arm]["chr_pos"].append( int(chr_pos[index]) ) # Turning them into integers allows booleans for control flow
 		progs_dict[progeny[0]] = info_sub_dict
 
 	# Begin assessing recombination:
@@ -680,6 +678,17 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 	total_progeny = 0 # The total number of progeny
 
 	for prog_name, chr_arm_dict in progs_dict.items(): 
+
+		# Remove individual missing markers (and respecitive locations) from progeny. Without this, the algorithm calls false recombinations. 
+		for chr_arms, mkr_n_pos_dict in progs_dict[prog_name].items(): 
+			new_mkr_list = []
+			new_pos_list = []
+			for index in range(0,len(mkr_n_pos_dict["marker"])): 
+				if missing not in mkr_n_pos_dict["marker"][index]: 
+					new_mkr_list.append(mkr_n_pos_dict["marker"][index])
+					new_pos_list.append(mkr_n_pos_dict["chr_pos"][index])
+		mkr_n_pos_dict["marker"] = new_mkr_list
+		mkr_n_pos_dict["chr_pos"] = new_pos_list
 
 		prog_recom_count = 0 # Total recombinations in each progeny
 
@@ -726,7 +735,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 					stor_idx = index  
 
 				try: 
-					recom_bool = (marker != marker_list[stor_idx]) and (marker != missing)
+					recom_bool = (marker != marker_list[stor_idx]) and (marker != missing) # (marker != missing) is unnecessary, but this line was written before I started just removing missing markers and I don't want to break my code. It's working fine with it in here.
 				except IndexError: # stor_idx is too big for marker_list 
 					print( "Disjunction between variable \"stor_idx\" and the index on a given chromosome. This code can't handle your input." ) 
 					recom_bool = 0
@@ -1090,9 +1099,10 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 
 	# Obtaining the chromosomal information from the file!
 	try: 
-		chr_file = open( dir_path + chr_file_name, "r" )
+		# chr_file = open( dir_path + chr_file_name, "r" ) # Chromosome files in subfolders; you may need to change chr_file_name argument to use the file you want
+		chr_file = open( chr_file_name, "r" )
 	except IOError: 
-		print( "Quitting..." )
+		print( "Couldn't find the chromosomes file:\n " + chr_file_name + ". \nQuitting..." )
 
 	centromere_locations = {}
 	chr_lengths = {}
@@ -1105,7 +1115,7 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 		line_list = lines.split(",")
 		chr_lengths[ line_list[0] ] = int(line_list[1])
 		centromere_locations[ line_list[0] ] = [int(line_list[2]),int(line_list[3])]
-		chr_labs[line_list[0]] = line_list[4]
+		chr_labs[line_list[0]] = line_list[4].strip()
 
 	# If performing a test run, this will be the section that is activated
 	test_bool = path_and_name.strip().lower() == "test"
@@ -1127,10 +1137,9 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 		blacklist_file_name = "test/blk_list_test.csv"
 	else:
 		# The blacklist file will only remove items that are present, so I've added anything I want to remove from either cross
-		# blacklist_file_name = "progeny_ploidy_blacklist.csv"
-		blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
+		blacklist_file_name = "progeny_ploidy_blacklist.csv"
+		# blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
 	
-
 	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_file_name )
 	stack_bar_file_name = dir_path + "stackbar_" + file_name 
 	marker_tally_ho( deploid_dict, stack_bar_file_name )
@@ -1150,4 +1159,4 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	centromerely_math( chr_lengths, centromere_locations, recom_dict, centro_data_name, resolution = resolve_this ) # takes The dictionary from recombination_analysis(), not recom_Stacker()
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + centro_data_name + " c" )
 
-main( )
+main()

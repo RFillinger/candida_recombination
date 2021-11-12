@@ -1,18 +1,6 @@
 
 # Upcoming changes:
 
-## `recombination_analysis()`:
-
-* **Huge bug in `recombination_analysis()` that registers recombinations from missing data.** 
-	* Seen in the SCxP6 file in the 1610000bp bin. 
-	* Make a test file and sort it out...
-
-
-## `deploidy()`: 
-
-* **Too many strains are being removed. Over half have disappeared from SCx529L and SCxP6 progeny lists when going from 4way to f2???**
-	* This started happening when I was messing with the `wtf.csv` test and added the chromosome file capabilities while trying to track down the bug in `recombination_analysis()`
-
 ## Lab meeting: 
 
 * Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events assc with one group versus the other based on their frequency?
@@ -55,6 +43,16 @@
 ---
 
 # Completed changes: 
+
+### 11/12/21
+
+* Fixed `recombination_analysis()` in `recombination_analyzer.py` by removing missing markers from progeny all together. 
+	* The program now successfully runs `analysis_ubermensch.csv` and `wtf.csv` successfully. 
+
+* Found the problem of `deploidy()`: because I moved the chromosome data into a new file, the lines included new line characters which caused all boolean calculations to be false. 
+	* This was the cause of the massive drop in progeny (75 to 48 progeny), not the `progeny_ploidy_blacklist.csv` file, thank god.
+	* I spent an hour rechecking `progeny_ploidy_blacklist.csv` and it's fine. 
+
 
 ### 11/10/21
 
