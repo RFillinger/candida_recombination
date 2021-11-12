@@ -39,7 +39,7 @@ absolute_positions <- function( chr_lengths ){
 
 
 geno_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positions,
-	ymax = 250, ignore_missing = 1, tick_perct = 0.025, strangers = 1,
+	ymax = 250, ignore_missing = 1, tick_perct = 0.025, strangers = 0,
 	color_1 = "#E7872B", color_2 = "#825CA6", color_3 = "#5AAA46", theme_color = "black" ) {
 
 	path = path_components( path_and_file )[1]
@@ -120,27 +120,28 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	file = path_components( path_and_file )[2]
 
 	df = read.csv( path_and_file )
-	# Chi-squared test (goodness of fit) lines go here
-	equal_probability_vector = rep((1/length(df[,8])), length(df[,8])) # Assumes random chance of a recombination for each bin. 
-	redistribution_vector = rep( round(sum(df[,8])/length(df[,8]), 0), length(df[,8]) )
 
-	chi_squared = chisq.test( x = df[,8], p = equal_probability_vector )
+	# Chi-squared test (goodness of fit) lines go here
+	equal_probability_vector = rep((1/length(df$recom.by.mkr)), length(df$recom.by.mkr)) # Assumes random chance of a recombination for each bin. 
+	redistribution_vector = rep( round(sum(df$recom.by.mkr)/length(df$recom.by.mkr), 0), length(df$recom.by.mkr) )
+
+	chi_squared = chisq.test( x = df$recom.by.mkr, p = equal_probability_vector )
 	# print( chi_squared$expected  ) # Every value should be above 5
 
-	shap_test = shapiro.test(df[,8]) # Test for normalcy of distributions
+	shap_test = shapiro.test(df$recom.by.mkr) # Test for normalcy of distributions
 
-	recom_stdev = sd(df[,8])
-	recom_avg = mean(df[,8])
+	recom_stdev = sd(df$recom.by.mkr)
+	recom_avg = mean(df$recom.by.mkr)
 	threshold = recom_avg + (2*recom_stdev) # represents 95% of data
 	opp_threshold = -threshold
 
-	big_bins = df[(df[,8]>threshold)|(df[,8]<opp_threshold),]
+	big_bins = df[(df$recom.by.mkr>threshold)|(df$recom.by.mkr<opp_threshold),]
 
 	y_pos = -0.5
 	col_1 = "magenta"
 	col_2 = "turquoise"
 
-	histogram <- ggplot(df, aes(x=df[,8])) + 
+	histogram <- ggplot(df, aes(x=df$recom.by.mkr)) + 
 		geom_histogram(binwidth=1) + 
 		lims( x=c(0,150) ) +
 		labs( y = "Frequency", x = "Recombination events") + 
@@ -169,7 +170,7 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	y_disp = -(ymax*tick_perct) + 15
 
 	p <- ggplot( data = df, aes( x = `univ.pos`, y = `recoms` )  ) + 
-		geom_col( color = "cyan") + 
+		geom_col( color = "cyan" ) + 
 		# geom_vline( xintercept = chromosomes_delineations, size = 0.2, color = color ) +
 		theme_minimal() + 
 		theme( legend.position = "none", axis.text.x = element_blank() ) + 
@@ -450,36 +451,57 @@ recom_histo <- function( rhf_filename, path_and_file, bandwidth ) {
 main <- function() {
 
 	args = commandArgs( trailingOnly = TRUE )
-	path_and_file = args[1]
-	graphs = args[2]
+	chromosome_filename = args[1]
+	path_and_file = args[2]
+	graphs = args[3]
 
-	chr_labs = list("Ca21chr1_C_albicans_SC5314" = "1", 
-					"Ca21chr2_C_albicans_SC5314" = "2",
-					"Ca21chr3_C_albicans_SC5314" = "3",
-					"Ca21chr4_C_albicans_SC5314" = "4",
-					"Ca21chr5_C_albicans_SC5314" = "5",
-					"Ca21chr6_C_albicans_SC5314" = "6",
-					"Ca21chr7_C_albicans_SC5314" = "7",
-					"Ca21chrR_C_albicans_SC5314" = "R")
+	chr_df = read.csv( chromosome_filename )
 
-	chr_lengths = list( "Ca21chr1_C_albicans_SC5314" = 3190000,
-						"Ca21chr2_C_albicans_SC5314" = 2230000,
-						"Ca21chr3_C_albicans_SC5314" = 1800000,
-						"Ca21chr4_C_albicans_SC5314" = 1600000,
-						"Ca21chr5_C_albicans_SC5314" = 1190000,
-						"Ca21chr6_C_albicans_SC5314" = 1030000,
-						"Ca21chr7_C_albicans_SC5314" = 950000,
-						"Ca21chrR_C_albicans_SC5314" = 2290000 )
+	chromosomes = unique( chr_df$chr_name )
+	chr_labs    = vector( mode="list", length=length( chromosomes ))
+	chr_lengths = vector( mode="list", length=length( chromosomes ))
+	centromeres = vector( mode="list", length=length( chromosomes ))
 
-	# Centromere names need to be identical to chromosome names. 
-	centromeres = list( "Ca21chr1_C_albicans_SC5314" = c(1563038,1565967), 
-						"Ca21chr2_C_albicans_SC5314" = c(1927255,1930214),
-						"Ca21chr3_C_albicans_SC5314" = c(823333,826481),
-						"Ca21chr4_C_albicans_SC5314" = c(992579,996216),
-						"Ca21chr5_C_albicans_SC5314" = c(468716,471745),
-						"Ca21chr6_C_albicans_SC5314" = c(980040,983792),
-						"Ca21chr7_C_albicans_SC5314" = c(425812,428712),
-						"Ca21chrR_C_albicans_SC5314" = c(1743190,1747664) )
+	names( chr_labs )    = as.vector(chromosomes)
+	names( chr_lengths ) = as.vector(chromosomes)
+	names( centromeres ) = as.vector(chromosomes)
+
+	for ( chromosome in chromosomes ){
+		# Subset the data frame to obtain the maximum sizes of chromosomes in the df
+		temp_df = chr_df[chr_df$chr_name == chromosome, ]
+		
+		chr_labs[[chromosome]]    = temp_df$alias
+		chr_lengths[[chromosome]] = temp_df$chr_length
+		centromeres[[chromosome]] = c( temp_df$centromere_1, temp_df$centromere_2 )
+	}
+
+	# chr_labs = list("Ca21chr1_C_albicans_SC5314" = "1", 
+	# 				"Ca21chr2_C_albicans_SC5314" = "2",
+	# 				"Ca21chr3_C_albicans_SC5314" = "3",
+	# 				"Ca21chr4_C_albicans_SC5314" = "4",
+	# 				"Ca21chr5_C_albicans_SC5314" = "5",
+	# 				"Ca21chr6_C_albicans_SC5314" = "6",
+	# 				"Ca21chr7_C_albicans_SC5314" = "7",
+	# 				"Ca21chrR_C_albicans_SC5314" = "R")
+
+	# chr_lengths = list( "Ca21chr1_C_albicans_SC5314" = 3190000,
+	# 					"Ca21chr2_C_albicans_SC5314" = 2230000,
+	# 					"Ca21chr3_C_albicans_SC5314" = 1800000,
+	# 					"Ca21chr4_C_albicans_SC5314" = 1600000,
+	# 					"Ca21chr5_C_albicans_SC5314" = 1190000,
+	# 					"Ca21chr6_C_albicans_SC5314" = 1030000,
+	# 					"Ca21chr7_C_albicans_SC5314" = 950000,
+	# 					"Ca21chrR_C_albicans_SC5314" = 2290000 )
+
+	# # Centromere names need to be identical to chromosome names. 
+	# centromeres = list( "Ca21chr1_C_albicans_SC5314" = c(1563038,1565967), 
+	# 					"Ca21chr2_C_albicans_SC5314" = c(1927255,1930214),
+	# 					"Ca21chr3_C_albicans_SC5314" = c(823333,826481),
+	# 					"Ca21chr4_C_albicans_SC5314" = c(992579,996216),
+	# 					"Ca21chr5_C_albicans_SC5314" = c(468716,471745),
+	# 					"Ca21chr6_C_albicans_SC5314" = c(980040,983792),
+	# 					"Ca21chr7_C_albicans_SC5314" = c(425812,428712),
+	# 					"Ca21chrR_C_albicans_SC5314" = c(1743190,1747664) )
 
 	color_1 = "#E7872B" # Orange
 	color_2 = "#825CA6" # Purple
@@ -489,13 +511,7 @@ main <- function() {
 
 	suppressWarnings({
 		if ( graphs == "g" ){
-
-			if (as.numeric(args[3]) == 1){
-				use_Strangers = 1
-			} else {
-				use_Strangers = 0
-			}
-			geno_graphs( path_and_file, chr_labs, chr_lengths, univ_pos, strangers = use_Strangers )
+			geno_graphs( path_and_file, chr_labs, chr_lengths, univ_pos )
 			recom_graphs( path_and_file, chr_labs, chr_lengths, univ_pos )
 		}
 
@@ -510,7 +526,7 @@ main <- function() {
 		}
 
 		if ( graphs == "h" ) {
-			rhg_filename = args[3]
+			rhg_filename = args[4]
 
 			recom_histo( rhg_filename, path_and_file, bandwidth = 5 )
 			track_lengths( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 10 )

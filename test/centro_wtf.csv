@@ -1,0 +1,4 @@
+chromosome,position,absolute_pos,cumulative_recom_cnt,chromosome_arm 
+Ca21chr1_C_albicans_SC5314,1564502,1564502,0,left
+Ca21chr1_C_albicans_SC5314,1564502,1564502,0,right
+Ca21chr1_C_albicans_SC5314,1615837,1615837,19,right

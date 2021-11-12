@@ -1,10 +1,17 @@
 
 # Upcoming changes:
 
-## Strange markers and copy number variations: 
+## `recombination_analysis()`:
 
-* Manually curate strange marker identities in `strange_marker_results.xlsx` (in the P6 cross) 
+* **Huge bug in `recombination_analysis()` that registers recombinations from missing data.** 
+	* Seen in the SCxP6 file in the 1610000bp bin. 
+	* Make a test file and sort it out...
 
+
+## `deploidy()`: 
+
+* **Too many strains are being removed. Over half have disappeared from SCx529L and SCxP6 progeny lists when going from 4way to f2???**
+	* This started happening when I was messing with the `wtf.csv` test and added the chromosome file capabilities while trying to track down the bug in `recombination_analysis()`
 
 ## Lab meeting: 
 
@@ -40,12 +47,6 @@
 
 * Make a Jupyter notebook for the `.git` repository.
 
-* Continue to fill out the `README`. I'll add more things to add here: 
-	1) STACKS pipeline preparation for data:
-		* pstacks - I used my `pstacks_automator_9.py` program
-		* cstacks - I used my `cstacks_automator10.py` program
-			* Segmentation faults in cstacks are caused by inputting empty pstacks files into the command; I just moved files that caused seg faults into a separate directory. 
-
 
 ## 210820 Meeting notes: 
 
@@ -54,6 +55,11 @@
 ---
 
 # Completed changes: 
+
+### 11/10/21
+
+* Added chromosomal file capabilities; chromosome information is now read in from a file rather than from manually written dictionaries in the python code. 
+
 
 ### 11/8/2021
 

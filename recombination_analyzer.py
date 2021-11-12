@@ -301,11 +301,12 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 	else: 
 		if blacklisted:
 			print( "marker_cleaner removed ", len(chuckers) - 1 + stranger_count , \
-			" markers (", 100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count), "%","removed )\n", \
-			"in addition to", blk_lst_rmv, "black-listed markers." )
+			# " markers (", 100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count), "%","removed )\n", \
+			# "in addition to", blk_lst_rmv, "black-listed markers." )
+			" markers (", str(100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count)) + "%" + " removed )" )
 		else:
 			print( "marker_cleaner removed ", len(chuckers) - 1 + stranger_count, \
-				" markers (", 100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count), "%","removed )")
+				" markers (", str(100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count)) + "%" + " removed )")
 
 	srt_keepers = sorted( keepers, key=operator.itemgetter(0,1) )
 	for lines in srt_keepers: 
@@ -398,7 +399,7 @@ def four_to_F2( cleaned_file_name ):
 
 
 def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_file_name = "", \
-				mark_strangers = 1, replace_special = "-", quit_on_no_strange = 0 ): 
+				mark_strangers = 1, replace_strange = "-", quit_on_no_strange = 0 ): 
 
 	""" This function removes entire progeny, aneuploid chromosomes, or individual markers (after manually checking them) from further analysis. 
 	I also don't really think that this has to be relegated to f2 data, it could definitely be put 
@@ -433,7 +434,6 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	chromosomes = f2_geno_array[0]
 	chr_pos = f2_geno_array[1]
 	mkr_number = f2_geno_array[2]
-	# strains = f2_geno_array[3:] # This includes the parents... Probably shouldn't include the parents
 	parent_1 = f2_geno_array[3]
 	parent_2 = f2_geno_array[4]
 	strains = f2_geno_array[5:] # This does not include the parents...
@@ -492,20 +492,25 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 		else: 
 			deploid_dict[ prog_name ] = single_strain[1:]
 
-	if mark_strangers:
-
-		try:
-			strange_marker_file = open( dir_path + "strange_markers.csv", "r" )
-		
-		except IOError: 
-			if quit_on_no_strange: 
-				quit()
-			else: 
-				print("Could not find strange_markers.csv. Default behavior is to continue without them." )
-				strange_marker_file = open( dir_path + "strange_markers.csv", "w" )
-		
+	try:
+		strange_marker_file = open( dir_path + "strange_markers.csv", "r" )
 		strange_mkr_list = csv_reader( strange_marker_file )
 		strange_cat_nums = strange_mkr_list[2]
+	
+	except IOError: 
+		if quit_on_no_strange: 
+			quit()
+		else: 
+			print("Could not find " + dir_path + "strange_markers.csv. We wrote an empty file to fill." )
+			strange_marker_file = open( dir_path + "strange_markers.csv", "w" )
+		mark_strangers = 0 
+
+	except IndexError: 
+		print( "No manually curated markers in " + dir_path + "strange_markers.csv. Default behavior is to continue without them.")
+		mark_strangers = 0 
+	
+	if mark_strangers:
+
 		strange_prog_dict = {}
 		for csv_lines in strange_mkr_list: 
 			prog_name = csv_lines[0]
@@ -528,13 +533,16 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 					continue
 
 				new_marker_index = strange_idx_list.index(idx)
-				new_marker = strange_prog_dict[prog_name][new_marker_index].strip()
+				if prog_name in strange_prog_dict:
+					new_marker = strange_prog_dict[prog_name][new_marker_index].strip()
+				else: 
+					continue
 
 				if mkr_list[ idx ] == "-": 
 					continue
 				else: 
 					if new_marker == "x": 
-						mkr_list[ idx ] = replace_special 
+						mkr_list[ idx ] = replace_strange 
 					else: 
 						mkr_list[ idx ] = new_marker 
 
@@ -548,20 +556,14 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 
 
 def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
-						a = "1", b = "2", h = "n", missing = "-", special = "x", include_missing = 0 ):
+						a = "1", b = "2", h = "n", missing = "-", strange = "x" ):
 
 	""" Tallys the markers for each strain and outputs a file for creating a stacked bar chart. """ 
 
 	stack_bar_file = open( stack_bar_file_name, "w" )
-
-	if include_missing: 
-		header = "Progeny/Strain, allele, count, a_prop, b_prop, h_prop, m_prop"
-		print( header, file = stack_bar_file )
-
-	else: 
-		header = "Progeny/Strain, allele, count, a_prop, b_prop, h_prop"
-		print( header, file = stack_bar_file )
-
+ 
+	header = "Progeny/Strain, allele, count, a_prop, b_prop, h_prop, m_prop"
+	print( header, file = stack_bar_file )
 
 	strain_tally_dict = {}
 	for strain_names, marker_list in strain_marker_dictionary.items(): 
@@ -582,7 +584,7 @@ def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
 				strain_tals[ b ] += 1
 			elif markers == h:
 				strain_tals[ h ] += 1
-			elif markers == special: 
+			elif markers == strange: 
 				strain_tals[ h ] += 1 # Technically, strange markers are heterozygous markers
 			elif markers == missing:
 				strain_tals[ missing ] += 1
@@ -591,31 +593,16 @@ def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
 				print( "Quitting" )
 				quit()
 
-		if include_missing:
-			total = strain_tals[a] + strain_tals[b] + strain_tals[h] + strain_tals[missing]
-			
-			a_proportion = round( strain_tals[a]/total, 5 )
-			b_proportion = round( strain_tals[b]/total, 5 )
-			h_proportion = round( strain_tals[h]/total, 5 )
-			m_proportion = round( strain_tals[missing]/total, 5 )
+		total = strain_tals[a] + strain_tals[b] + strain_tals[h] + strain_tals[missing]
+		
+		a_proportion = round( strain_tals[a]/total, 5 )
+		b_proportion = round( strain_tals[b]/total, 5 )
+		h_proportion = round( strain_tals[h]/total, 5 )
+		m_proportion = round( strain_tals[missing]/total, 5 )
 
-			for alleles, count in strain_tals.items(): 
-				line = ",".join([ str(strain_names), str(alleles), str(count), str(a_proportion), str(b_proportion), str(h_proportion), str(m_propotion) ])
-				print( line, file = stack_bar_file )
-
-		else: 
-			total = strain_tals[a] + strain_tals[b] + strain_tals[h]
-			
-
-			a_proportion = round( strain_tals[a]/total, 5 )
-			b_proportion = round( strain_tals[b]/total, 5 )
-			h_proportion = round( strain_tals[h]/total, 5 )
-
-			for alleles, count in strain_tals.items(): 
-				if alleles == missing: 
-					continue
-				line = ",".join([ str(strain_names), str(alleles), str(count), str(a_proportion), str(b_proportion), str(h_proportion) ])
-				print( line, file = stack_bar_file )
+		for alleles, count in strain_tals.items(): 
+			line = ",".join([ str(strain_names), str(alleles), str(count), str(a_proportion), str(b_proportion), str(h_proportion), str(m_proportion) ])
+			print( line, file = stack_bar_file )
 
 	stack_bar_file.close()
 
@@ -643,7 +630,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 	parent1     = f2_array[3]
 	parent2     = f2_array[4]
 	children    = f2_array[5:]
-	
+
 	progs_dict = {}
 	recombs = {}
 	left_rite_indies = {}
@@ -853,12 +840,11 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 
 		print( prog_name + "," + str(prog_recom_count), file = count_file)
 	
-	# print( recombs )
 	print( "Total progeny: ", total_progeny )
 	print( "Total recombinations: ", recom_count )
 	print( "Number of putative break-induced replications: ", bir )
 
-	return recombs # Recombs is just a dictionary with progeny names as keys and then a list of strings with recombination "events" 
+	return recombs, total_progeny # Recombs is just a dictionary with progeny names as keys and then a list of strings with recombination "events" 
 	# Sample event: event = ",".join( [chromosomes[i], str( left_side_centro ), str(event_size)] )
 
 	f2_file.close()
@@ -866,8 +852,8 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 	count_file.close()
 
 
-def recom_Stacker( chr_lengths, recom_dict, output_file_name, resolution = 100000, \
-					a = "1", b = "2", h = "n", missing = "-", special = "x", mark_strangers = 1, short_bins = 0 ): 
+def recom_Stacker( chr_lengths, recom_dict, total_progeny, output_file_name, resolution = 100000, \
+					a = "1", b = "2", h = "n", missing = "-", strange = "x" ): 
 	
 	"""Creates a dictionary of chromosomes and bin sizes that wll be used for histograms to depict recombination hotspot for each allele type."""   
 
@@ -888,17 +874,12 @@ def recom_Stacker( chr_lengths, recom_dict, output_file_name, resolution = 10000
 		chr_bin_dict = {}
 		tal_bin_dict = {}
 
-		if short_bins: 
-			stop = length-(length%resolution)
-		else: 
-			stop = length-(length%resolution)+resolution
+		stop = length-(length%resolution)+resolution
 		
 		for i in range(0, stop, resolution):
 			chr_bin_dict[ i ] = 0
-			if mark_strangers:
-				tal_bin_dict[ i ] = { a: 0, b: 0, h: 0, missing: 0, special: 0 }
-			else:
-				tal_bin_dict[ i ] = { a: 0, b: 0, h: 0, missing: 0 }
+			tal_bin_dict[ i ] = { a: 0, b: 0, h: 0, missing: 0, strange: 0 }
+
 		recom_bins[ chromo ] = chr_bin_dict
 		tally_dict[ chromo ] = tal_bin_dict
 
@@ -932,30 +913,45 @@ def recom_Stacker( chr_lengths, recom_dict, output_file_name, resolution = 10000
 
 	# Print the information
 	recom_out_file = open( output_file_name, "w" )
-	if mark_strangers:
-		header = "chr,chr.pos,univ.pos,a,b,h,s,missing,recoms"
-	else:
-		header = "chr,chr.pos,univ.pos,a,b,h,missing,recoms"  
+	header = "chr,chr.pos,univ.pos,a,b,h,s,missing,recoms,recom.by.col,recom.by.mkr"
+	  
 	print( header, file = recom_out_file )
 	for chromosome, chr_bins in recom_bins.items(): 
 		for bins, recom_freq in chr_bins.items(): 
 			# I'm gonna call the tallies using the recombination data because the positions are identical and I want them in the same file. 
 			prt_pos = str(bins)
 			prt_univ_pos = str(bins + univ_chr_dict[ chromosome ])
-			prt_a = str(tally_dict[ chromosome ][ bins ][ a ])
-			prt_b = str(tally_dict[ chromosome ][ bins ][ b ])
-			prt_h = str(tally_dict[ chromosome ][ bins ][ h ])
-			prt_m = str(tally_dict[ chromosome ][ bins ][ missing ])
-			prt_freq = str(recom_freq)
 
-			if mark_strangers:
-				prt_s = str(tally_dict[ chromosome ][ bins ][ special ])
-				print( ",".join( [ chromosome, prt_pos, prt_univ_pos, prt_a, prt_b, prt_h, prt_s, prt_m, prt_freq ] ), file = recom_out_file )
-			else: 
-				print( ",".join( [ chromosome, prt_pos, prt_univ_pos, prt_a, prt_b, prt_h, prt_m, prt_freq ] ), file = recom_out_file )
+			int_a = tally_dict[ chromosome ][ bins ][ a ]
+			int_b = tally_dict[ chromosome ][ bins ][ b ]
+			int_h = tally_dict[ chromosome ][ bins ][ h ]
+			int_s = tally_dict[ chromosome ][ bins ][ strange ]
+			int_m = tally_dict[ chromosome ][ bins ][ missing ]
+			int_freq = recom_freq
+
+			total = int_a + int_b + int_h + int_s + int_m # Every marker, present or absent
+
+			mkr_loci_count = total // total_progeny
+			id_mkr_cnt = total - int_m # Every marker with an identifiable genotype (excludes missing markers)
+
+			try: 
+				recom_by_loci_cnt = round( int_freq / mkr_loci_count, 4 )
+				recom_by_mkr_cnt = round( int_freq / id_mkr_cnt, 4 )
+
+			except ZeroDivisionError: 
+				recom_by_loci_cnt = 0
+				recom_by_mkr_cnt = 0 
+
+			prt_lc = str( recom_by_loci_cnt )
+			prt_rmc = str( recom_by_mkr_cnt )
+
+			prt_a, prt_b, prt_h, prt_s, prt_m, prt_freq = str(int_a), str(int_b), str(int_h), str(int_s), str(int_m), str(int_freq)
+
+			print( ",".join( [ chromosome, prt_pos, prt_univ_pos, prt_a, prt_b, prt_h, prt_s, prt_m, prt_freq, prt_lc, prt_rmc ] ), file = recom_out_file )
+			
 	recom_out_file.close()
 
-	return recom_bins, resolution 
+	return recom_bins, resolution
 
 
 def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_file_name, \
@@ -965,7 +961,8 @@ def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_fil
 	""" Calculate cumulative recombination as a function of distance from centromeres """
 
 	# Compute the universal position for each chromosome into the total variable. 
-	# This is to translate marker positions into universal positions for graphing 
+	# This is to translate marker positions into universal positions for graphing.
+
 	total = 0
 	univ_chr_dict = {}
 	for chromosomes, lengths in chr_lengths.items(): 
@@ -1077,7 +1074,7 @@ def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_fil
 			print( ",".join([ chromosomes, str(events[0]), str(absolute_pos), str(accumulated_recom_count), events[2] ]), file = centro_file )
 
 
-def main(create_tester = 0):
+def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 
 	"""Main combines all the functions into one "smooth" workflow!"""
 
@@ -1086,39 +1083,29 @@ def main(create_tester = 0):
 		arg_list.append( arg )
 	
 	path_and_name = arg_list[1] # Parse the path and file name
-	use_Strangers = int(arg_list[2])
+	# use_Strangers = int(arg_list[2])
 
 	# Split the name into two pieces: the directory path and the file name itself
 	dir_path, file_name = parse_path( path_and_name )
 
-	# Taken from the genes.gff from A21 
-	centromere_locations = { "Ca21chr1_C_albicans_SC5314": [1563038,1565967], \
-							 "Ca21chr2_C_albicans_SC5314": [1927255,1930214], \
-							 "Ca21chr3_C_albicans_SC5314": [823333,826481], \
-							 "Ca21chr4_C_albicans_SC5314": [992579,996216], \
-							 "Ca21chr5_C_albicans_SC5314": [468716,471745], \
-							 "Ca21chr6_C_albicans_SC5314": [980040,983792], \
-							 "Ca21chr7_C_albicans_SC5314": [425812,428712], \
-							 "Ca21chrR_C_albicans_SC5314": [1743190,1747664] }
-	
-	# Size of each chromosome in basepairs. Exact is best, but these can be estimated. 
-	chr_lengths = { "Ca21chr1_C_albicans_SC5314":3185000, \
-					"Ca21chr2_C_albicans_SC5314":2230000, \
-					"Ca21chr3_C_albicans_SC5314":1795000, \
-					"Ca21chr4_C_albicans_SC5314":1600000, \
-					"Ca21chr5_C_albicans_SC5314":1190000, \
-					"Ca21chr6_C_albicans_SC5314":1030000, \
-					"Ca21chr7_C_albicans_SC5314":945000,  \
-					"Ca21chrR_C_albicans_SC5314":2285000 }
+	# Obtaining the chromosomal information from the file!
+	try: 
+		chr_file = open( dir_path + chr_file_name, "r" )
+	except IOError: 
+		print( "Quitting..." )
 
-	chr_labs =  {	"Ca21chr1_C_albicans_SC5314": "1", \
-					"Ca21chr2_C_albicans_SC5314": "2", \
-					"Ca21chr3_C_albicans_SC5314": "3", \
-					"Ca21chr4_C_albicans_SC5314": "4", \
-					"Ca21chr5_C_albicans_SC5314": "5", \
-					"Ca21chr6_C_albicans_SC5314": "6", \
-					"Ca21chr7_C_albicans_SC5314": "7", \
-					"Ca21chrR_C_albicans_SC5314": "R" }
+	centromere_locations = {}
+	chr_lengths = {}
+	chr_labs = {}
+	header_skip = 1
+	for lines in chr_file: 
+		if header_skip: 
+			header_skip = 0 
+			continue
+		line_list = lines.split(",")
+		chr_lengths[ line_list[0] ] = int(line_list[1])
+		centromere_locations[ line_list[0] ] = [int(line_list[2]),int(line_list[3])]
+		chr_labs[line_list[0]] = line_list[4]
 
 	# If performing a test run, this will be the section that is activated
 	test_bool = path_and_name.strip().lower() == "test"
@@ -1140,33 +1127,27 @@ def main(create_tester = 0):
 		blacklist_file_name = "test/blk_list_test.csv"
 	else:
 		# The blacklist file will only remove items that are present, so I've added anything I want to remove from either cross
-		blacklist_file_name = "progeny_ploidy_blacklist.csv"
-		# blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
+		# blacklist_file_name = "progeny_ploidy_blacklist.csv"
+		blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
 	
 
 	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_file_name )
 	stack_bar_file_name = dir_path + "stackbar_" + file_name 
 	marker_tally_ho( deploid_dict, stack_bar_file_name )
-	os.system( "Rscript recombination_bins.R " + stack_bar_file_name + " s" )
+	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + stack_bar_file_name + " s " )
 
 	prog_recom_count_filename = dir_path + "recom-count_" + file_name
 	stats_file_name = dir_path + "statistics_" + file_name
-	recom_dict = recombination_analysis( dir_path, ploid_f2_file_name, stats_file_name, prog_recom_count_filename, centromere_locations, chr_lengths )
-	os.system( "Rscript recombination_bins.R " + stats_file_name + " h " + prog_recom_count_filename )
+	recom_dict, total_progeny = recombination_analysis( dir_path, ploid_f2_file_name, stats_file_name, prog_recom_count_filename, centromere_locations, chr_lengths )
+	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + stats_file_name + " h " + prog_recom_count_filename  )
 
 	resolve_this = 10000
 	recom_data_name = dir_path + "recom_" + file_name
-	recom_bins, resolution = recom_Stacker( chr_lengths, recom_dict, recom_data_name, resolution = resolve_this, mark_strangers = use_Strangers ) # Stack recombinations
-	if use_Strangers: 
-		command_line = "Rscript recombination_bins.R " + recom_data_name + " g 1"
-
-	else: 
-		command_line = "Rscript recombination_bins.R " + recom_data_name + " g 0"
-
-	os.system( command_line )
+	recom_bins, resolution = recom_Stacker( chr_lengths, recom_dict, total_progeny, recom_data_name, resolution = resolve_this ) # Stack recombinations
+	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + recom_data_name + " g" )
 
 	centro_data_name = dir_path + "centro_" + file_name
 	centromerely_math( chr_lengths, centromere_locations, recom_dict, centro_data_name, resolution = resolve_this ) # takes The dictionary from recombination_analysis(), not recom_Stacker()
-	os.system( "Rscript recombination_bins.R " + centro_data_name + " c" )
+	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + centro_data_name + " c" )
 
 main( )
