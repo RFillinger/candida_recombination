@@ -207,7 +207,8 @@ def test_creator( output_file_name, number_of_prog_to_generate = 66, length = 20
 	test_file.close()
 
 
-def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.csv", remove_strangers = 1, blacklisted = 1, print_undesirables = 1): 
+def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.csv", \
+					remove_strangers = 0, blacklisted = 1, print_undesirables = 1): 
 	"""This function removes markers that are missing from eiter parent and markers that are
 	ambiguous between parents (the parents share an allele). """
 
@@ -482,7 +483,8 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 		if prog_name in ploid_dict: 
 			if ploid_dict[ prog_name ] != []:
 				deploid_dict[ prog_name ] = [] 
-				for index, marker in enumerate(single_strain): 
+				for index, marker in enumerate(
+					single_strain): 
 					if index == 0: 
 						continue
 					if index in remove_dict[ prog_name ]: 
@@ -505,14 +507,14 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 			quit()
 		else: 
 			print("Could not find " + dir_path + "strange_markers.csv. We wrote an empty file to fill." )
-			strange_marker_file = open( dir_path + "strange_markers.csv", "w" )
+			# strange_marker_file = open( dir_path + "strange_markers.csv", "w" )
 		mark_strangers = 0 
 
 	except IndexError: 
 		print( "No manually curated markers in " + dir_path + "strange_markers.csv. Default behavior is to continue without them.")
 		mark_strangers = 0 
 	
-	if mark_strangers:
+	if mark_strangers:	
 
 		strange_prog_dict = {}
 		for csv_lines in strange_mkr_list: 
@@ -520,8 +522,8 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 			strange_prog_dict[ prog_name ] = csv_lines[1:]
 		# Find indexes in cleaned_markers where strange markers are
 		strange_idx_list = []
-		for index in range(0,len(mkr_number)): 
-			if mkr_number[ index ] in strange_cat_nums:
+		for index in range(1,len(mkr_number)): 
+			if int(mkr_number[ index ]) in strange_cat_nums:
 				strange_idx_list.append(index-1)
 
 		for idx in strange_idx_list: 
@@ -556,7 +558,7 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 
 
 def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
-						a = "1", b = "2", h = "n", missing = "-", strange = "x" ):
+						a = "1", b = "2", h = "n", missing = "-", strange = "x", include_missing = 0 ):
 
 	""" Tallys the markers for each strain and outputs a file for creating a stacked bar chart. """ 
 
@@ -601,6 +603,9 @@ def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
 		m_proportion = round( strain_tals[missing]/total, 5 )
 
 		for alleles, count in strain_tals.items(): 
+			if (include_missing == 0) and (missing in alleles):
+				continue 
+
 			line = ",".join([ str(strain_names), str(alleles), str(count), str(a_proportion), str(b_proportion), str(h_proportion), str(m_proportion) ])
 			print( line, file = stack_bar_file )
 

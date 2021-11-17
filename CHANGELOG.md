@@ -1,11 +1,15 @@
 
 # Upcoming changes:
 
+## `Shared_geno_graphs()` in `recombination_bins.R`
+
+* Proper order is not maintained after sorting graphs, despite fixing this issue previously. 
+	* Combine all 3 a, b, and h proportion columns into a single column
+
+
 ## Lab meeting: 
 
 * Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events assc with one group versus the other based on their frequency?
-
-* **Divide the number of recombination events per 100Kb bin by the number of markers and progeny and replot**
 
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
 
@@ -14,14 +18,7 @@
 
 * Chi-squared comparison for finding hotspots
 
-* The total number of recombinations in the recombination bar charts need to be relativised to the number of progeny. More progeny = more recombinations.
-
 * Find markers with extreme biases towards one parent or another.
-
-
-## General code improvement: 
-
-* Add input capabilities for chromosome input file, It's the last piece that needs to be modularized. 
 
 
 ## Aesthetics:
@@ -31,18 +28,17 @@
 
 ## Idiot checks and miscellaneous: 
 
-* Make sure areas of recombination in the graphs correspond to haplotype calls in the data. Start by looking in areas of the graph that have "low recombination" and then look at areas with "high recombination." They should match pretty well.
-
 * Make a Jupyter notebook for the `.git` repository.
-
-
-## 210820 Meeting notes: 
-
-* Non-disjunction could give rise to increased retention of non-SC5314 alleles for Chr beyond selection
 
 ---
 
 # Completed changes: 
+
+### 11/17/2021
+
+* Fixed function: **Strange markers are being completely removed from the f2_recleaned data files instead of deleting the individual strange markers.** 
+	* Turns out, it wasn't `deploidy()`, but a default argument change  in `marker_cleaner()`. **No more changes to default arguments without explicit notes in here.** 
+
 
 ### 11/12/21
 
@@ -52,6 +48,9 @@
 * Found the problem of `deploidy()`: because I moved the chromosome data into a new file, the lines included new line characters which caused all boolean calculations to be false. 
 	* This was the cause of the massive drop in progeny (75 to 48 progeny), not the `progeny_ploidy_blacklist.csv` file, thank god.
 	* I spent an hour rechecking `progeny_ploidy_blacklist.csv` and it's fine. 
+
+* Forgot to add this to the last commit: **Divided the number of recombination events per 100Kb bin by the number of markers and progeny and replot**
+	* I changed the y-axis limits in `recom_graphs()` in `recombination_bins.R` because the values are less than 1. 
 
 
 ### 11/10/21

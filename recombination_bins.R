@@ -114,7 +114,7 @@ geno_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positio
 
 
 recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positions,  
-							ymax = 1.5, tick_perct = 0.025, add_stdev_lines = 0, color = "gold", theme_color = "black" ) {
+							ymax = 1, tick_perct = 0.025, add_stdev_lines = 0, color = "gold", theme_color = "black" ) {
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
@@ -171,11 +171,15 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 
 	p <- ggplot( data = df, aes( x = `univ.pos`, y = `recom.by.mkr` )  ) + 
 		geom_col( color = "cyan" ) + 
-		# geom_vline( xintercept = chromosomes_delineations, size = 0.2, color = color ) +
-		theme_minimal() + 
-		theme( legend.position = "none", axis.text.x = element_blank() ) + 
+		# geom_vline( xintercept = chromosomes_delineations, size = 0.2, color = color ) + 
 		labs( y = "Recombinations per Marker", x = NULL ) + 
-		ylim( c(0,ymax)) 
+		ylim( c(0,ymax)) + 
+		theme_bw() + 
+		theme( panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(), 
+			axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
+			panel.grid.minor.y = element_blank(), 
+			axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+			panel.border = element_blank() )
 
 	if ( add_stdev_lines ){
 		p <- p + geom_hline( yintercept = recom_avg ) + 
@@ -198,13 +202,13 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	
 
 	# Second loop for the labels that go under the delineations
-	i = 1 
-	for ( chromosomes in names(chr_labs) ){
-		x_spot = round(chr_lengths[[ chromosomes ]]/2 + universal_positions[[ chromosomes ]])
-		p <- p + annotation_custom( textGrob(chr_labs[[chromosomes]], gp = gpar( fontsize = 10, col = theme_color)), # Adds the chromosome labels
-						xmin = x_spot , xmax = x_spot, ymin = -tick_perct * ymax, ymax = -tick_perct * ymax )
-		i = i + 1
-	}
+	# i = 1 
+	# for ( chromosomes in names(chr_labs) ){
+	# 	x_spot = round(chr_lengths[[ chromosomes ]]/2 + universal_positions[[ chromosomes ]])
+	# 	p <- p + annotation_custom( textGrob(chr_labs[[chromosomes]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
+	# 					xmin = x_spot , xmax = x_spot, ymin = -tick_perct * ymax, ymax = -tick_perct * ymax )
+	# 	i = i + 1
+	# }
 
 	if ( add_stdev_lines ){
 		ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_STDEV", file_extension), width=7, height=7 )
@@ -306,9 +310,10 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 
 	i = 1 
 	for ( centromere in centro_means ){
-		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) + # Adds the better custom ticks
-				annotation_custom( textGrob(chr_labs[[i]], gp = gpar( fontsize = 10, col = theme_color)), # Adds the chromosome labels
-					xmin = centromere , xmax = centromere, ymin = y_disp, ymax = y_disp ) 
+		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) # Adds the better custom ticks
+		# p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) +
+				# annotation_custom( textGrob(chr_labs[[i]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
+				# 	xmin = centromere , xmax = centromere, ymin = y_disp, ymax = y_disp ) 
 				# annotation_custom(segmentsGrob(gp = gpar(col = theme_color, lwd = 2)), # Adds the custom ticks
         			# xmin = centromere, xmax = centromere, ymin = y_disp, ymax = y_disp)
 		i = i + 1
@@ -367,30 +372,37 @@ shared_geno_graphs <- function( path_and_file, chr_labs, chr_lengths, univ_pos, 
 	file = path_components( path_and_file )[2]
 	df = read.csv( path_and_file )
 
-	for ( leels in unique(df[,2]) ){
+	if (include_missing == 0 ){
+
+		df = df[ df$allele != missing, c(1:6) ]
+		
+	}
+
+	# for ( leels in unique(df[,2]) ){
+	for ( leels in c("1") ){
 
 		if ( leels == a ) {
 			# Sort a first, then b, then h
-			df = df[ order(df[,4]), ]
-			df[,2] = factor( unique(df[,2]), levels = c(b,h,a) )
+			df = df[ order(df$a_prop), ]
+			df$allele = factor( unique(df$allele), levels = c(b,h,a) )
 			colors = c(color_2, color_3, color_1)
 
 		} else if ( leels == b ) {
 
 			df = df[ order(df[,5]), ]
-			df[,2] = factor( unique(df[,2]), levels = c(a,h,b) )
+			df$allele = factor( unique(df$allele), levels = c(a,h,b) )
 			colors = c(color_1, color_3, color_2)			
 
 		} else if ( leels == h ){
 
 			df = df[ order(df[,6]), ]
-			df[,2] = factor( unique(df[,2]), levels = c(a,b,h) )
+			df$allele = factor( unique(df$allele), levels = c(a,b,h) )
 			colors = c(color_1, color_2, color_3)
-
+		
 		} else if ( (leels == missing) && include_missing ){
 
 			df = df[ order(df[,7]), ]
-			df[,2] = factor( unique(df[,2]), levels = c(a,h,b,missing) )
+			df$allele = factor( unique(df$allele), levels = c(a,h,b,missing) )
 			colors = c(color_1, color_3, color_2, "magenta")
 
 		}
@@ -407,14 +419,13 @@ shared_geno_graphs <- function( path_and_file, chr_labs, chr_lengths, univ_pos, 
 					axis.text.x = element_blank() )
 					# axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0) ) + 
 			
-
 		ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_", leels , file_extension ), width=10, height=7)
 
 	}
 }
 
 
-track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 25, ymaximum = 600, xmaximum = 2000 ){
+track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 25, ymaximum = 300, xmaximum = 2000, theme_color = "black" ){
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
@@ -425,13 +436,27 @@ track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, band
 	labs( x = paste0("Estimated Recombination Size (Kbp) Binsize: ", bandwidth), y = "Frequency") +
 	ylim( c(0,ymaximum)) +
 	xlim( c(0,xmaximum)) + 
-	theme_minimal()
+	theme_bw() + 
+	theme( panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(), 
+			axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
+			panel.grid.minor.y = element_blank(), 
+			axis.title.y = element_blank(),  axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+			panel.border = element_blank() ) 
+
+	# Loop for the delineations
+	x_spots = c(0,500,1000,1500,2000)
+	for ( tickmarks in x_spots ){
+		g <- g + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.03* ymaximum, color = "#EBEDEE")  
+				# annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels
+				# 		xmin = tickmarks , xmax = tickmarks, ymin = -0.025* (ymaximum-1), ymax = -0.025* (ymaximum-1) )
+	}
 
 	ggsave( paste0( path, substr( file, 1, str_length(file)-4 ), file_extension ), width=7, height=7 )
 
 }
 
-recom_histo <- function( rhf_filename, path_and_file, bandwidth ) {
+
+recom_histo <- function( rhf_filename, path_and_file, bandwidth, ymaximum = 35, theme_color = "black" ) {
 
 	path_stuff = path_components( path_and_file )
 	path = path_stuff[1]
@@ -441,7 +466,22 @@ recom_histo <- function( rhf_filename, path_and_file, bandwidth ) {
 	x <- ggplot( data = df, aes( x = df[,2] )) + 
 	geom_histogram( binwidth = bandwidth, color = "black", fill = "white" ) + 
 	labs( x = "", y = "Recombination Frequency" ) + 
-	theme_minimal()
+	theme_bw() + 
+	ylim( c(0,ymaximum)) +
+	xlim( c(0,105)) + 
+	theme( panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(), 
+			axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
+			panel.grid.minor.y = element_blank(), 
+			axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
+			panel.border = element_blank() ) 
+
+	# Loop for the delineations
+	x_spots = c(5,25,50,75,100)
+	for ( tickmarks in x_spots ){
+		x <- x + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.03* ymaximum, color = "#EBEDEE")  
+				# annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels
+				# 		xmin = tickmarks , xmax = tickmarks, ymin = -0.025* (ymaximum-1), ymax = -0.025* (ymaximum-1) )
+	}
 
 	ggsave( paste0( path, "RECO_histo_", substr(file,12,str_length(file)-4 ), ".png" ), width=7, height=7 )
 
@@ -506,6 +546,8 @@ main <- function() {
 	color_1 = "#E7872B" # Orange
 	color_2 = "#825CA6" # Purple
 	color_3 = "#5AAA46" # Greene
+
+	color_4 = "#EBEDEE" # Gray from the theme_bw()
 
 	univ_pos = absolute_positions( chr_lengths )
 
