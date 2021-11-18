@@ -1,12 +1,6 @@
 
 # Upcoming changes:
 
-## `Shared_geno_graphs()` in `recombination_bins.R`
-
-* Proper order is not maintained after sorting graphs, despite fixing this issue previously. 
-	* Combine all 3 a, b, and h proportion columns into a single column
-
-
 ## Lab meeting: 
 
 * Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events assc with one group versus the other based on their frequency?
@@ -33,6 +27,11 @@
 ---
 
 # Completed changes: 
+
+### 11/18/21
+
+* Properly order in the `shared_geno_praphs()` function in `recombiantion_bins()` restored after excluding missing markers from the total. 
+
 
 ### 11/17/2021
 

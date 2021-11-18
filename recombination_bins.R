@@ -367,61 +367,40 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 
 shared_geno_graphs <- function( path_and_file, chr_labs, chr_lengths, univ_pos, a = "1", b = "2", h = "n", missing = "-", include_missing = 0, 
 								color_1 = "#E7872B", color_2 = "#825CA6", color_3 = "#5AAA46" ){
-
+	# color_1 = "#E7872B" # Orange  color_2 = "#825CA6" # Purple # color_3 = "#5AAA46" # Greene
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
 	df = read.csv( path_and_file )
 
 	if (include_missing == 0 ){
 
-		df = df[ df$allele != missing, c(1:6) ]
+		df = df[ df$allele != missing, ]
+		
+		df$allele = factor( df$allele, levels = c(b,h,a) )
+		colors = c( color_2, color_3, color_1 )
+
+		df = df[ order(df$a_prop), ]
+		df$Progeny.Strain = factor( df$Progeny.Strain, levels = unique(df$Progeny.Strain) )
 		
 	}
 
-	# for ( leels in unique(df[,2]) ){
-	for ( leels in c("1") ){
-
-		if ( leels == a ) {
-			# Sort a first, then b, then h
-			df = df[ order(df$a_prop), ]
-			df$allele = factor( unique(df$allele), levels = c(b,h,a) )
-			colors = c(color_2, color_3, color_1)
-
-		} else if ( leels == b ) {
-
-			df = df[ order(df[,5]), ]
-			df$allele = factor( unique(df$allele), levels = c(a,h,b) )
-			colors = c(color_1, color_3, color_2)			
-
-		} else if ( leels == h ){
-
-			df = df[ order(df[,6]), ]
-			df$allele = factor( unique(df$allele), levels = c(a,b,h) )
-			colors = c(color_1, color_2, color_3)
-		
-		} else if ( (leels == missing) && include_missing ){
-
-			df = df[ order(df[,7]), ]
-			df$allele = factor( unique(df$allele), levels = c(a,h,b,missing) )
-			colors = c(color_1, color_3, color_2, "magenta")
-
-		}
-
-		p <- ggplot( data = df, aes( fill = `allele`, x = `Progeny.Strain`, y = `count` )  ) +
+	p <- ggplot( data = df, aes( fill = `allele`, x = `Progeny.Strain`, y = `prop` )  ) +
 			geom_bar( position = "fill", stat = "identity", width = 2.5 ) + 
-			scale_fill_manual( name = "Allele", values = colors, labels = c( "Parent 2", "Heterozygous", "Parent 1") ) + 
-			scale_x_discrete( limits = df$Progeny.Strain ) + # Adds parent and progeny names 
-			theme_minimal() + 
-			labs( x = NULL, y = "Allele Proportion", color = "Allele" ) +
-			theme(  axis.text=element_text(size=12), 
-					axis.title = element_text(size=14), 
-					legend.text = element_text(size = 12),
-					axis.text.x = element_blank() )
-					# axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0) ) + 
+			scale_fill_manual( values = colors ) + 
+			scale_x_discrete( limits = df$Progeny.Strain) + # Adds parent and progeny names 
+			theme_bw() + 
+			theme(  axis.text = element_blank(), 
+					axis.title = element_blank(), 
+					legend.text = element_blank(),
+					axis.text.x = element_blank(),
+					panel.border = element_blank(),
+					panel.grid.major = element_blank(),
+					panel.grid.minor = element_blank(), 
+					axis.ticks = element_blank(), 
+					legend.position = "none" )
 			
-		ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_", leels , file_extension ), width=10, height=7)
+	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), file_extension ), width=10, height=7)
 
-	}
 }
 
 
@@ -514,34 +493,6 @@ main <- function() {
 		chr_lengths[[chromosome]] = temp_df$chr_length
 		centromeres[[chromosome]] = c( temp_df$centromere_1, temp_df$centromere_2 )
 	}
-
-	# chr_labs = list("Ca21chr1_C_albicans_SC5314" = "1", 
-	# 				"Ca21chr2_C_albicans_SC5314" = "2",
-	# 				"Ca21chr3_C_albicans_SC5314" = "3",
-	# 				"Ca21chr4_C_albicans_SC5314" = "4",
-	# 				"Ca21chr5_C_albicans_SC5314" = "5",
-	# 				"Ca21chr6_C_albicans_SC5314" = "6",
-	# 				"Ca21chr7_C_albicans_SC5314" = "7",
-	# 				"Ca21chrR_C_albicans_SC5314" = "R")
-
-	# chr_lengths = list( "Ca21chr1_C_albicans_SC5314" = 3190000,
-	# 					"Ca21chr2_C_albicans_SC5314" = 2230000,
-	# 					"Ca21chr3_C_albicans_SC5314" = 1800000,
-	# 					"Ca21chr4_C_albicans_SC5314" = 1600000,
-	# 					"Ca21chr5_C_albicans_SC5314" = 1190000,
-	# 					"Ca21chr6_C_albicans_SC5314" = 1030000,
-	# 					"Ca21chr7_C_albicans_SC5314" = 950000,
-	# 					"Ca21chrR_C_albicans_SC5314" = 2290000 )
-
-	# # Centromere names need to be identical to chromosome names. 
-	# centromeres = list( "Ca21chr1_C_albicans_SC5314" = c(1563038,1565967), 
-	# 					"Ca21chr2_C_albicans_SC5314" = c(1927255,1930214),
-	# 					"Ca21chr3_C_albicans_SC5314" = c(823333,826481),
-	# 					"Ca21chr4_C_albicans_SC5314" = c(992579,996216),
-	# 					"Ca21chr5_C_albicans_SC5314" = c(468716,471745),
-	# 					"Ca21chr6_C_albicans_SC5314" = c(980040,983792),
-	# 					"Ca21chr7_C_albicans_SC5314" = c(425812,428712),
-	# 					"Ca21chrR_C_albicans_SC5314" = c(1743190,1747664) )
 
 	color_1 = "#E7872B" # Orange
 	color_2 = "#825CA6" # Purple

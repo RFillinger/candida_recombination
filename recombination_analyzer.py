@@ -564,7 +564,7 @@ def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
 
 	stack_bar_file = open( stack_bar_file_name, "w" )
  
-	header = "Progeny/Strain, allele, count, a_prop, b_prop, h_prop, m_prop"
+	header = "Progeny/Strain, allele, count, prop, a_prop, b_prop, h_prop"
 	print( header, file = stack_bar_file )
 
 	strain_tally_dict = {}
@@ -595,18 +595,20 @@ def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
 				print( "Quitting" )
 				quit()
 
-		total = strain_tals[a] + strain_tals[b] + strain_tals[h] + strain_tals[missing]
-		
+		total = strain_tals[a] + strain_tals[b] + strain_tals[h] 
+		# total = strain_tals[a] + strain_tals[b] + strain_tals[h] + strain_tals[missing]
+
 		a_proportion = round( strain_tals[a]/total, 5 )
 		b_proportion = round( strain_tals[b]/total, 5 )
 		h_proportion = round( strain_tals[h]/total, 5 )
-		m_proportion = round( strain_tals[missing]/total, 5 )
+		# m_proportion = round( strain_tals[missing]/total, 5 )
 
 		for alleles, count in strain_tals.items(): 
 			if (include_missing == 0) and (missing in alleles):
 				continue 
-
-			line = ",".join([ str(strain_names), str(alleles), str(count), str(a_proportion), str(b_proportion), str(h_proportion), str(m_proportion) ])
+			leel_prop = round( strain_tals[alleles]/total, 5 )
+			line = ",".join([ str(strain_names), str(alleles), str(count), str(leel_prop), str(a_proportion), str(b_proportion), str(h_proportion) ])
+			# line = ",".join([ str(strain_names), str(alleles), str(count), str(leel_prop), str(a_proportion), str(b_proportion), str(h_proportion), str(m_proportion) ])
 			print( line, file = stack_bar_file )
 
 	stack_bar_file.close()
