@@ -1,4 +1,9 @@
 # Recombination analysis
+
+This data is accessible through a jupyter notebook: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/RFillinger/candida_recombination/master)
+
+Copy markdown link to clipboard 
+
 **ddRAD-Seq is a cheap, high-depth sequencing technique that generates genotyping data across the whole genome. The goal of this project is to quantify and map recombination events using ddRAD-Seq data, or any genomic data of progeny from two parents that can be characterized with markers** 
 
 #### Ploidy analysis an filtration
@@ -16,11 +21,11 @@ A tool called `barcode_splitter` is employed for out single-end reads:
 |Sample Name|Sample Barcode|
 |:--------:|:--------:|
 | Sample_1 | TCGAT    |
-| Sample_1 | TGCAT    |
-| Sample_1 | CAACC    |
-| Sample_1 | AAGGA    |
-| Sample_1 | AGCTA    |
-| Sample_1 | ACACA    |
+| Sample_2 | TGCAT    |
+| Sample_3 | CAACC    |
+| Sample_4 | AAGGA    |
+| Sample_5 | AGCTA    |
+| Sample_6 | ACACA    |
 
 
 #### Alignments and `.bam` file processing

@@ -3,14 +3,12 @@
 
 ## Lab meeting: 
 
-* Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events assc with one group versus the other based on their frequency?
+* Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events associated with one group versus the other based on their frequency?
 
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
 
 
 ## Linear modelling and statistics: 
-
-* Chi-squared comparison for finding hotspots
 
 * Find markers with extreme biases towards one parent or another.
 
@@ -22,15 +20,21 @@
 
 ## Idiot checks and miscellaneous: 
 
-* Make a Jupyter notebook for the `.git` repository.
+* Make a Jupyter notebook for the `.git` repository. 
+	* **This repository needs to be made public before it can be made accessible to Binder.**
 
 ---
 
 # Completed changes: 
 
+### 11/22/21
+
+* Wrote `recom_stats.R` to find statistical differences between parental crosses using the Kolmogorov-Smirnov test to substitute for chi-squared test. 
+
+
 ### 11/18/21
 
-* Properly order in the `shared_geno_praphs()` function in `recombiantion_bins()` restored after excluding missing markers from the total. 
+* Properly order in the `shared_geno_graphs()` function in `recombination_bins()` restored after excluding missing markers from the total. 
 
 
 ### 11/17/2021
