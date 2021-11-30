@@ -60,7 +60,7 @@ def marker_cleaner(sample_list, file_name):
 	"""This function removes markers that are missing from eiter parent and markers that are
 	ambiguous between parents (the parents share an allele). """
 
-	keepers = []
+	keepers = [0]
 	chuckers = []
 
 	length = len(sample_list[0])
@@ -69,12 +69,14 @@ def marker_cleaner(sample_list, file_name):
 	chr_pos     = sample_list[1]
 	parent1     = sample_list[2] #SC5314
 	parent2     = sample_list[3] #529L or P60002
+	progeny     = sample_list[4:]
 
 	for index in range(1,length): # Skip the header; start at 1
 
 		try: 
 			p1b = parent1[index][0] + parent1[index][-1]
 			p2b = parent2[index][0] + parent2[index][-1]
+
 		except IndexError: 
 			print( "Something is wrong with the parental genotypes: ", chromosomes[index], ": ", chr_pos[index] )
 			print( "Parent 1 (SC): ", p1b )
@@ -87,60 +89,62 @@ def marker_cleaner(sample_list, file_name):
 			quit()
 
 		# if they share an allele! Make sure I know...
-		chucker_bool = (p1b[0] == p2b[0]) or (p1b[0] == p2b[1]) or (p1b[1] == p2b[0]) or (p1b[1] == p2b[1])
+		chucker_bool = (p1b[0] == p2b[0]) or (p1b[0] == p2b[1]) or (p1b[1] == p2b[0]) or (p1b[1] == p2b[1]) or \
+						(chromosomes[index] == "Ca19-mtDNA") or ("." in p1b) or ("." in p2b) or \
+						p1b.isdigit() or p2b.isdigit()
 
 		if chucker_bool:
 			chuckers.append( index )
 		else: 
 			keepers.append( index )
 
+	markers_processed = 0 
+	catalog_IDs = ["# Catalog IDs"]
+
+	cleaned_list = []
+	for lines in sample_list: 
+		new_line_list = []
+
+		for indices in keepers: 
+			new_line_list.append( str(lines[indices]).strip() )
+			markers_processed += 1
+			catalog_IDs.append( str(markers_processed) )
+
+		cleaned_list.append(new_line_list)
+
+	cleaned_list.insert(2,catalog_IDs)
+
+	trp_cleaned_list = transpose(cleaned_list)
+
+	for markers in trp_cleaned_list:
+
+		chromosome = markers[0]
+		chr_pos    = markers[1]
+		cat_num    = markers[2]
+		par1_geno  = markers[3]
+		par2_geno  = markers[4]
+		progeny    = markers[5:]
+
+		empty_set = set()
+
+		empty_set.add(par1_geno[0])
+		empty_set.add(par1_geno[-1])
+		empty_set.add(par2_geno[0])
+		empty_set.add(par2_geno[-1])
+
+		print( empty_set )
+
+
 	# Convert the data to 4way to just put it through the pipeline! It'll be much simpler that way.  
 
+	out_file = open( "4way_"+file_name, "w" )
 
-def four_to_F2( cleaned_file_name ):
+	csv_printer(cleaned_list, out_file)
+
+
+
+
 	
-	"""Converts 4-way alele data to F2 
-	ALL INPUT INTO THIS FUNCTION MUST GO THROUGH THE 'marker_cleaner' FUNCTION FIRST!!!"""
-	dir_path, file_name = parse_path( cleaned_file_name )
-	cleaned_marker_file = open( dir_path + file_name, "r" )
-	untrp_cleaned_markers = csv_reader( cleaned_marker_file )
-	cleaned_markers = transpose( untrp_cleaned_markers )
-
-	f2_array = []
-
-	header = 1
-	for lines in cleaned_markers: 
-		
-		if header: 
-			f2_array.append( lines )
-			header = 0
-			continue		
-
-		parent1 = lines[3]
-		parent2 = lines[4]
-
-		new_line = copy.deepcopy(lines[:3]) # Creates the new marker for conversion and adds alleles for parent 1 and 2 (since we know they're already mutually exclusive)
-		new_line.append( "1" )
-		new_line.append( "2" )
-
-		for n, elements in enumerate(lines[5:]): # This DOES NOT check for post-parasex LOH events ("dd" and perhaps "cc" are examples). Not sure how important those are, but they'll be called "n." 
-
-			if "-" in elements: 
-				new_line.append( "-" )
-			elif elements == parent1: 
-				new_line.append( "1" )
-			elif elements == parent2: 
-				new_line.append( "2" )
-			else:
-				new_line.append( "n" )
-
-		f2_array.append( new_line )
-
-	trp_f2 = transpose( f2_array )
-
-	new_file = open( dir_path + "f2_" + file_name, "w")
-	csv_printer( trp_f2, new_file )
-	new_file.close()
 
 
 def main():

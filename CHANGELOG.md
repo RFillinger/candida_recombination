@@ -8,6 +8,11 @@
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
 
 
+## Converting less-than-diploid progeny whole genome sequencing data to genotype data: 
+
+* Convert less-than-diploid progeny WGS data into 4way data.  
+
+
 ## Linear modelling and statistics: 
 
 * Find markers with extreme biases towards one parent or another.
@@ -26,6 +31,16 @@
 ---
 
 # Completed changes: 
+
+### 11/29/21 
+
+* Began writing a function to convert progeny whole genome sequencing data into 4way marker data. 
+
+
+### 11/23/21
+
+* Wrote a program that opens the file, processess the input data and can create markers.
+
 
 ### 11/22/21
 
