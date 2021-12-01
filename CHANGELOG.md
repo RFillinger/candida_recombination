@@ -10,7 +10,7 @@
 
 ## Converting less-than-diploid progeny whole genome sequencing data to genotype data: 
 
-* Convert less-than-diploid progeny WGS data into 4way data.  
+* Keep an eye on markers with more than two alleles in these samples; my program doesn't sort them the same way that STACKS does. I think it should still work. 
 
 
 ## Linear modelling and statistics: 
@@ -31,6 +31,15 @@
 ---
 
 # Completed changes: 
+
+### 12/1/21
+
+* Finished program `ltd_wgs_converter.py` which converts less-than-diploid progeny WGS data into 4way data so it can be run through the recombination pipeline. 
+* Commented out recombination histo graph from `recombiantion_bins.R`
+	* This was causing an error when running either LTD_Progeny crosses through
+* Commented out linear modelling line addition to `centro_graphs()` function in `recombination_bins.R`
+	* This was causing an error only when running `LTD_Progeny_Markers/ltd_P6_4way.csv` through the pipeline. It's not strictly necessary, so I removed it. 
+
 
 ### 11/29/21 
 

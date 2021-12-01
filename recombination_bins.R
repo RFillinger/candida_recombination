@@ -143,17 +143,17 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	col_1 = "magenta"
 	col_2 = "turquoise"
 
-	histogram <- ggplot(df, aes(x=df$recom.by.mkr)) + 
-		geom_histogram(binwidth=1) + 
-		lims( x=c(0,150) ) +
-		labs( y = "Frequency", x = "Recombination events") + 
-		geom_segment( x = recom_avg, y = 0, xend = recom_avg, yend = y_pos, color = col_1) + 
-		geom_segment( x = threshold, y = 0, xend = threshold, yend = y_pos, color = col_2 ) + 
-		geom_segment( x = opp_threshold, y = 0, xend = opp_threshold, yend = y_pos, color = col_2 ) + 
-		annotation_custom( textGrob("Mean", gp = gpar( fontsize = 10, col = col_1)), # Adds label to mean line
-							xmin = recom_avg , xmax = recom_avg, ymin = y_pos, ymax = y_pos ) + 
-		annotation_custom( textGrob("Mean + 2σ", gp = gpar( fontsize = 10, col = col_2 )), # Adds label to mean line
-							xmin = threshold , xmax = threshold, ymin = y_pos, ymax = y_pos )
+	# histogram <- ggplot(df, aes(x=df$recom.by.mkr)) + 
+	# 	geom_histogram(binwidth=1) + 
+	# 	lims( x=c(0,150) ) +
+	# 	labs( y = "Frequency", x = "Recombination events") + 
+	# 	geom_segment( x = recom_avg, y = 0, xend = recom_avg, yend = y_pos, color = col_1) + 
+	# 	geom_segment( x = threshold, y = 0, xend = threshold, yend = y_pos, color = col_2 ) + 
+	# 	geom_segment( x = opp_threshold, y = 0, xend = opp_threshold, yend = y_pos, color = col_2 ) + 
+	# 	annotation_custom( textGrob("Mean", gp = gpar( fontsize = 10, col = col_1)), # Adds label to mean line
+	# 						xmin = recom_avg , xmax = recom_avg, ymin = y_pos, ymax = y_pos ) + 
+	# 	annotation_custom( textGrob("Mean + 2σ", gp = gpar( fontsize = 10, col = col_2 )), # Adds label to mean line
+	# 						xmin = threshold , xmax = threshold, ymin = y_pos, ymax = y_pos )
 
 	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), ".recom_hist", file_extension ), width=7, height=7 )
 
@@ -327,43 +327,43 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 
 	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), file_extension), width=7, height=7 )
 
-	i = 0
-	for (arms in names(model_dat)) {
+	# i = 0
+	# for (arms in names(model_dat)) {
 
-		chr_name = unique( model_dat[[ arms ]]$chromosome )
+	# 	chr_name = unique( model_dat[[ arms ]]$chromosome )
 
-		if (i%%2 == 1){
-			x_loc = round(chr_lengths[[chr_name]]*(1/4)) + universal_positions[[chr_name]]
-			y_loc = ymaximum*0.9
+	# 	if (i%%2 == 1){
+	# 		x_loc = round(chr_lengths[[chr_name]]*(1/4)) + universal_positions[[chr_name]]
+	# 		y_loc = ymaximum*0.9
 
-		} else {
-			x_loc = round(chr_lengths[[chr_name]]*(3/4)) + universal_positions[[chr_name]]
-			y_loc = ymaximum*0.7
-		}
+	# 	} else {
+	# 		x_loc = round(chr_lengths[[chr_name]]*(3/4)) + universal_positions[[chr_name]]
+	# 		y_loc = ymaximum*0.7
+	# 	}
 
-		arm_model = lm (model_dat[[ arms ]]$cumulative_recom_cnt ~ model_dat[[ arms ]]$absolute_pos)
-		r2_val = round(summary(arm_model)$r.squared, 2 )
-		model_p_val = lmp( arm_model )
-		coeff_p_val = round( summary( arm_model)$coefficients[,4], 2)
+	# 	arm_model = lm (model_dat[[ arms ]]$cumulative_recom_cnt ~ model_dat[[ arms ]]$absolute_pos)
+	# 	r2_val = round(summary(arm_model)$r.squared, 2 )
+	# 	model_p_val = lmp( arm_model )
+	# 	coeff_p_val = round( summary( arm_model)$coefficients[,4], 2)
 
-		lm_model = model_dat[[arms]][,4] ~ model_dat[[arms]][,3]
+	# 	lm_model = model_dat[[arms]][,4] ~ model_dat[[arms]][,3]
 		
-		# Prints p-values of model fit to each arm
-		# print( arms )
-		# print( model_p_val )
+	# 	# Prints p-values of model fit to each arm
+	# 	# print( arms )
+	# 	# print( model_p_val )
 		
-		# This set will generate lines, but make a lot of warnings
-		# p = p + geom_smooth( data = model_dat[[arms]], method = "lm", se = FALSE, color = "black", na.rm = TRUE ) + 
-		# 		annotation_custom( textGrob( r2_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the r squared values
-		# 			xmin = x_loc , xmax = x_loc, ymin = y_loc, ymax = y_loc )
+	# 	# This set will generate lines, but make a lot of warnings
+	# 	# p = p + geom_smooth( data = model_dat[[arms]], method = "lm", se = FALSE, color = "black", na.rm = TRUE ) + 
+	# 	# 		annotation_custom( textGrob( r2_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the r squared values
+	# 	# 			xmin = x_loc , xmax = x_loc, ymin = y_loc, ymax = y_loc )
 
-		# This chunk won't make lines or warnings
-		p = p + geom_smooth( data = model_dat[[arms]], formula = lm_model, method = "lm", se = FALSE, color = "black", na.rm = TRUE ) + 
-				annotation_custom( textGrob( r2_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the r squared values
-					xmin = x_loc , xmax = x_loc, ymin = y_loc, ymax = y_loc ) #+ 
-				# annotation_custom( textGrob( model_p_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the p-values
-				# 	xmin = x_loc, xmax = x_loc, ymin = y_loc - 0.05*ymaximum, ymax = y_loc - 0.05*ymaximum )
-		i = i + 1
+	# 	# This chunk won't make lines or warnings
+	# 	p = p + geom_smooth( data = model_dat[[arms]], formula = lm_model, method = "lm", se = FALSE, color = "black", na.rm = TRUE ) + 
+	# 			annotation_custom( textGrob( r2_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the r squared values
+	# 				xmin = x_loc , xmax = x_loc, ymin = y_loc, ymax = y_loc ) #+ 
+	# 			# annotation_custom( textGrob( model_p_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the p-values
+	# 			# 	xmin = x_loc, xmax = x_loc, ymin = y_loc - 0.05*ymaximum, ymax = y_loc - 0.05*ymaximum )
+	# 	i = i + 1
 	}
 
 	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_lm", file_extension ), width=7, height=7 )
