@@ -364,9 +364,9 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 	# 			# annotation_custom( textGrob( model_p_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the p-values
 	# 			# 	xmin = x_loc, xmax = x_loc, ymin = y_loc - 0.05*ymaximum, ymax = y_loc - 0.05*ymaximum )
 	# 	i = i + 1
-	}
+	# }
 
-	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_lm", file_extension ), width=7, height=7 )
+	# ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_lm", file_extension ), width=7, height=7 )
 
 }
 

@@ -69,7 +69,6 @@ def snp2mkr( SNP, cat_ID ):
 	# Convert the data to 4way here
 	geno_list = ["a", "b", "c", "d"]
 
-	
 	empty_set = set()
 	for genos in SNP:
 
@@ -92,7 +91,11 @@ def snp2mkr( SNP, cat_ID ):
 		for char in mkrs: 
 			if char == "/": 
 				continue
-			new_mkr = new_mkr + marker_dict[char]
+
+			if char == ".": 
+				new_mkr = "-"
+			else:
+				new_mkr = new_mkr + marker_dict[char]
 
 		new_mkr_list.append( new_mkr )
 
@@ -104,12 +107,19 @@ def snp2mkr( SNP, cat_ID ):
 def this_is_the_way(): 
 	"""This function converts "diploid" SNP data into 4way data for use in recombination_analysis.py """
 
+	
 	arg_list = []
 	for arg in sys.argv:
 		arg_list.append( arg )
 	
 	path_and_name = arg_list[1] 
 	dir_path, file_name = parse_path( path_and_name )
+
+	if "test" in file_name.lower(): 
+		test = 1
+	else: 
+		test = 0
+		
 	data_file = open( file_name, "r" )
 	data_list = csv_reader( data_file )
 
@@ -134,10 +144,10 @@ def this_is_the_way():
 		MAY_332_P600_prog = snps[19] # SCxP60002 Progeny
 		MAY_333_P600_prog = snps[20] # SCxP60002 Progeny
 
+		cat_ID = str(index)
+
 		if "Ca19-mtDNA" in chromosome: 
 			continue
-
-		cat_ID = str(index)
 
 		if header: 
 			header = 0
@@ -162,12 +172,25 @@ def this_is_the_way():
 		five29L_cross.append( new_529L_mkr )
 		p60002_cross.append( new_P6_mkr )
 
-	new_5_file = open( "ltd_529L_4way.csv", "w" )
-	csv_printer( transpose(five29L_cross), new_5_file )
-	# csv_printer( five29L_cross, new_5_file )
+	if test: 
 
-	new_P6_file = open( "ltd_P6_4way.csv", "w" )
-	csv_printer( transpose(p60002_cross), new_P6_file )
-	# csv_printer( p60002_cross, new_P6_file )
+		new_5_file = open( "529L_TEST_4way.csv", "w" )
+		# csv_printer( transpose(five29L_cross), new_5_file )
+		csv_printer( five29L_cross, new_5_file )
+
+		new_P6_file = open( "P600_TEST_4way.csv", "w" )
+		# csv_printer( transpose(p60002_cross), new_P6_file )
+		csv_printer( p60002_cross, new_P6_file )
+
+
+	else: 
+
+		new_5_file = open( "ltd_529L_4way.csv", "w" )
+		csv_printer( transpose(five29L_cross), new_5_file )
+		# csv_printer( five29L_cross, new_5_file )
+
+		new_P6_file = open( "ltd_P6_4way.csv", "w" )
+		csv_printer( transpose(p60002_cross), new_P6_file )
+		# csv_printer( p60002_cross, new_P6_file )
 
 this_is_the_way()

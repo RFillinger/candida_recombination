@@ -8,19 +8,9 @@
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
 
 
-## Converting less-than-diploid progeny whole genome sequencing data to genotype data: 
-
-* Keep an eye on markers with more than two alleles in these samples; my program doesn't sort them the same way that STACKS does. I think it should still work. 
-
-
 ## Linear modelling and statistics: 
 
 * Find markers with extreme biases towards one parent or another.
-
-
-## Aesthetics:
-
-* Change chromosome colors in the centromere recombination graphs. RGB already means something in other graphs.
 
 
 ## Idiot checks and miscellaneous: 
@@ -31,6 +21,17 @@
 ---
 
 # Completed changes: 
+
+### 12/6/21
+
+* Changed `marker_cleaner()` `remove_strangers` argument from 0 to 1 to run less-than-diploid 529LxSC WGS data. I changed it back, but that data needs to be run with it on. 
+	* The LTD diploid data has 100,000 markers in it. 80,000 are removed. Of the remaining 20,000, 316 are categorized as strange: SNPs present in 529L and SC5314 that denote the presence of 3 or more alleles. Going through these, even for 6 progeny will be a nightmare, so I just removed them by default. 
+
+
+### 12/2/21
+
+* Added a component to `ltd_wgs_converter.py` that converts missing SNP data to missing 4way data ("." -> "-") so these markers can be cleared by `marker_cleaner()` in `recombination_analysis.py`
+
 
 ### 12/1/21
 

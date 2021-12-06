@@ -121,4 +121,24 @@ To use `allele_switch_finder.py`, use the following command:
 Run randomized test data in `recombination_analyzer.py`
 
 Test this program by using the following command: 
-> python3 recombination_analyzer.py test 1
+> python3 recombination_analyzer.py test
+
+
+#### Recombination and SNP analysis less-than-diploid progeny WGS data: 
+
+I found inconsistencies with the P60002 parental; there are far fewer SNPs in this data set (35 distinguishable SNPs) than those in our original sequencing of the 21 clinical isolates (30,000), so we are leaving these data out of the analysis. 
+
+In `LTD_Progeny_Markers`, I convert SNP data or progeny that have some haploid chromosomes to 4way data so their recombination landscapes can be run with `recombination_analyzer.py` to see definitively whether or not there is recombination in euploid chromosomes.
+
+Start this pipeline by running: 
+> python3 ltd_wgs_converter.py WGS_outputSNPs.csv
+
+Then run it through the pipeline: 
+> python3 recombination_analyzer.py LTD_Progeny_Markers/ltd_529L_4way.csv
+>> marker_cleaner removed  82094  markers ( 81.3931485788623% removed ) 
+>> Total progeny:  6
+>> Total recombinations:  3043
+>> Number of putative break-induced replications:  94
+
+
+
