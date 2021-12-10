@@ -104,10 +104,10 @@ def snp2mkr( SNP, cat_ID ):
 
 
 
-def this_is_the_way(): 
+def this_is_the_way():
+
 	"""This function converts "diploid" SNP data into 4way data for use in recombination_analysis.py """
 
-	
 	arg_list = []
 	for arg in sys.argv:
 		arg_list.append( arg )
@@ -151,12 +151,15 @@ def this_is_the_way():
 
 		if header: 
 			header = 0
-			five29L_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[10], snps[12]] + snps[14:19] )
+			# five29L_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[10], snps[12]] + snps[14:19] )
+			five29L_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[10]] + snps[14:19] )
 			p60002_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[11], snps[13]] + snps[19:] )
 			continue
 
-		SCx529L = [ SC5314, five29L, MAY_103_529L_tet, MAY_154_529L_prog, MAY_155_529L_prog, \
-													MAY_156_529L_prog, MAY_157_529L_prog, MAY_158_529L_prog ]
+		# SCx529L = [ SC5314, five29L, MAY_103_529L_tet, MAY_154_529L_prog, MAY_155_529L_prog, \
+		# 											MAY_156_529L_prog, MAY_157_529L_prog, MAY_158_529L_prog ] # Include the tetraploid
+
+		SCx529L = [ SC5314, five29L, MAY_154_529L_prog, MAY_155_529L_prog, MAY_156_529L_prog, MAY_157_529L_prog, MAY_158_529L_prog ] # Exclude tetraploid
 
 		SCxP6   = [ SC5314, P60002, MAY_316_P600_tet, MAY_332_P600_prog, MAY_333_P600_prog ]
 

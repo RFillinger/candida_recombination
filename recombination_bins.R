@@ -221,7 +221,6 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	} else {
 		ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), file_extension), width=7, height=7 )
 	}
-	
 
 }
 
@@ -410,7 +409,7 @@ shared_geno_graphs <- function( path_and_file, chr_labs, chr_lengths, univ_pos, 
 }
 
 
-track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 25, ymaximum = 300, xmaximum = 2000, theme_color = "black" ){
+track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 0.5, ymaximum = 500, xmaximum = 750, theme_color = "black" ){
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
@@ -429,7 +428,9 @@ track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, band
 			panel.border = element_blank() ) 
 
 	# Loop for the delineations
-	x_spots = c(0,500,1000,1500,2000)
+	# x_spots = c(0,500,1000,1500,2000)
+	x_spots = c(0,250,500,750)
+
 	for ( tickmarks in x_spots ){
 		g <- g + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.03* ymaximum, color = theme_color)  
 				# annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels

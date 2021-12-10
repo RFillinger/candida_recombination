@@ -208,7 +208,7 @@ def test_creator( output_file_name, number_of_prog_to_generate = 66, length = 20
 
 
 def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.csv", \
-					remove_strangers = 0, blacklisted = 1, print_undesirables = 1): 
+					remove_strangers = 1, blacklisted = 1, print_undesirables = 1): 
 	"""This function removes markers that are missing from eiter parent and markers that are
 	ambiguous between parents (the parents share an allele). """
 

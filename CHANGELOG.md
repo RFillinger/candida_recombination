@@ -3,6 +3,8 @@
 
 ## Lab meeting: 
 
+* Make figures showing color-coded recombination for LTD progeny chromosomes of 2 of them. One with the most 529L genotypes and another with a lot of 529L genotypes. 
+
 * Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events associated with one group versus the other based on their frequency?
 
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
@@ -21,6 +23,22 @@
 ---
 
 # Completed changes: 
+
+### 12/8/21
+
+* Rarefaction curve showing relationship between the number of markers and number of recombinations (use both ddrad and WGS data) this should generate an asymptote.
+* Starting work on `chr_reco.R` which will be used to make color-coded areas using data from the `tally_ho` function... There's gonna be tons of data points, but I currently don't have the `.csv` that I need to make the program work. 
+
+
+### 12/7/21
+
+* Changing default argument `remove_strangers` in `marker_cleaner()` from 0 to 1, meaning that any markers with 3 or more alleles will be removed to avoid strange markers...
+* Adusting `track_lengths()` function in `recombination_bins.R` 
+	1) Set function default value `ymaximum` to 500
+	2) Set function default value `xmaximum` to 750
+	3) Set function default value `bandwidth` (which is the bin size, confusingly) to 0.5 from 25; changing the bin size from 25,000 bp to 500bp
+	4) Commented out `x_spots` vector for custom x-axis delineations and replaced with `x_spots = c(0,250,500,750)`
+
 
 ### 12/6/21
 
