@@ -409,15 +409,17 @@ shared_geno_graphs <- function( path_and_file, chr_labs, chr_lengths, univ_pos, 
 }
 
 
-track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 0.5, ymaximum = 500, xmaximum = 750, theme_color = "black" ){
+track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bwidth = 0.1, ymaximum = 500, xmaximum = 750, theme_color = "black" ){
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
 	df = read.csv( path_and_file )
 
-	g <- ggplot( data = df, aes( x = df[,4]/1000)) + 
-	geom_histogram( binwidth = bandwidth, color = "black", fill = "white") +
-	labs( x = paste0("Estimated Recombination Size (Kbp) Binsize: ", bandwidth), y = "Frequency") +
+	# print(head(df))
+
+	g <- ggplot( data = df, aes( x = `Recombination.Event.Length..bp.`/1000)) + # kilo base pairs
+	geom_histogram( binwidth = bwidth, color = "black", fill = "white") +
+	labs( x = paste0("Estimated Recombination Size (Kbp) Binsize: ", bwidth), y = "Frequency") +
 	ylim( c(0,ymaximum)) +
 	xlim( c(0,xmaximum)) + 
 	theme_bw() + 
@@ -442,7 +444,7 @@ track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, band
 }
 
 
-recom_histo <- function( rhf_filename, path_and_file, bandwidth, ymaximum = 35, theme_color = "black" ) {
+recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, theme_color = "black" ) {
 
 	path_stuff = path_components( path_and_file )
 	path = path_stuff[1]
@@ -450,7 +452,7 @@ recom_histo <- function( rhf_filename, path_and_file, bandwidth, ymaximum = 35, 
 
 	df = read.csv( rhf_filename ) 
 	x <- ggplot( data = df, aes( x = df[,2] )) + 
-	geom_histogram( binwidth = bandwidth, color = "black", fill = "white" ) + 
+	geom_histogram( binwidth = bwidth, color = "black", fill = "white" ) + 
 	labs( x = "", y = "Recombination Frequency" ) + 
 	theme_bw() + 
 	ylim( c(0,ymaximum)) +
@@ -533,8 +535,8 @@ main <- function() {
 		if ( graphs == "h" ) {
 			rhg_filename = args[4]
 
-			recom_histo( rhg_filename, path_and_file, bandwidth = 5 )
-			track_lengths( path_and_file, chr_labs, chr_lengths, univ_pos, bandwidth = 10 )
+			recom_histo( rhg_filename, path_and_file, bwidth = 5 )
+			track_lengths( path_and_file, chr_labs, chr_lengths, univ_pos, bwidth = 10 )
 		}
 	})
 
