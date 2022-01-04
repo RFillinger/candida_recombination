@@ -17,6 +17,7 @@ def csv_reader( input_file ):
 
 	return line_list 
 
+
 def transpose(l1):
 
 	""" Transposes a 2D python array """
@@ -208,7 +209,7 @@ def test_creator( output_file_name, number_of_prog_to_generate = 66, length = 20
 
 
 def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.csv", \
-					remove_strangers = 1, blacklisted = 1, print_undesirables = 1): 
+					remove_strangers = 0, blacklisted = 1, print_undesirables = 1): 
 	"""This function removes markers that are missing from eiter parent and markers that are
 	ambiguous between parents (the parents share an allele). """
 
@@ -273,11 +274,19 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 			chuckers.append( lines )
 			continue
 
-		if ("a" in parent1) and ("a" in parent2): # Remove ambiguous markers; only need to check for a and b 
+		if ("a" in parent1) and ("a" in parent2): # Remove ambiguous markers; only need to check for a and b, unless you make a custom filtering program that can add c first like I did... 
 			chuckers.append( lines )
 			continue
 
 		if ("b" in parent1) and ("b" in parent2): # Remove ambiguous markers 
+			chuckers.append( lines )
+			continue
+
+		if ("c" in parent1) and ("c" in parent2): # c and d are likely very redundant, but they are here to find any messy data.  
+			chuckers.append( lines )
+			continue
+
+		if ("d" in parent1) and ("d" in parent2): 
 			chuckers.append( lines )
 			continue
 
@@ -290,10 +299,12 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 
 		parental_leel_count = len( unique_alleles )
 
-		if (parental_leel_count > 2) and ( remove_strangers ): # Remove tandem repeat recombination markers
+		if (parental_leel_count > 2): # Remove tandem repeat recombination markers
 			strangers.append( lines )
 			stranger_count += 1 
-			continue
+
+			if remove_strangers:
+				continue
 
 		keepers.append( lines )
 
@@ -694,8 +705,10 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 				if missing not in mkr_n_pos_dict["marker"][index]: 
 					new_mkr_list.append(mkr_n_pos_dict["marker"][index])
 					new_pos_list.append(mkr_n_pos_dict["chr_pos"][index])
-		mkr_n_pos_dict["marker"] = new_mkr_list
-		mkr_n_pos_dict["chr_pos"] = new_pos_list
+			
+			mkr_n_pos_dict["marker"] = new_mkr_list # This should have been a new data structure... I couldn't tell that the data wasn't being replaced 
+			mkr_n_pos_dict["chr_pos"] = new_pos_list # Because the data still existed, it wasn't repalced. Indenting these lines 3x fixes the problem, but...
+
 
 		prog_recom_count = 0 # Total recombinations in each progeny
 
@@ -860,12 +873,12 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 	print( "Total recombinations: ", recom_count )
 	print( "Number of putative break-induced replications: ", bir )
 
-	return recombs, total_progeny # Recombs is just a dictionary with progeny names as keys and then a list of strings with recombination "events" 
-	# Sample event: event = ",".join( [chromosomes[i], str( left_side_centro ), str(event_size)] )
-
 	f2_file.close()
 	output_file.close()
 	count_file.close()
+
+	return recombs, total_progeny # Recombs is just a dictionary with progeny names as keys and then a list of strings with recombination "events" 
+	# Sample event: event = ",".join( [chromosomes[i], str( left_side_centro ), str(event_size)] )
 
 
 def recom_Stacker( chr_lengths, recom_dict, total_progeny, output_file_name, resolution = 100000, \
@@ -1090,6 +1103,68 @@ def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_fil
 			print( ",".join([ chromosomes, str(events[0]), str(absolute_pos), str(accumulated_recom_count), events[2] ]), file = centro_file )
 
 
+def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths, missing = "-"):
+	
+	"""This function takes markers with 3 or more alleles across both parents
+	(the same markers that I used to manually prune strange markers) 
+	and finds loss-of-heterozygosity events inside them. """
+
+	fw_file = open( dir_path + fw_file_name, "r" ) # Strangers
+	fw_array = csv_reader( fw_file )
+	fw_file.close()
+
+	trp_fw_array = transpose(fw_array)
+
+	# Printing the stats file
+	output_file = open( output_file_name, "w" )
+
+	
+	empty_list = []
+	header = 1
+
+	for markers in trp_fw_array: 
+
+		chromosomes = markers[0]
+		chr_pos     = markers[1]
+		mrkr_cat_id = markers[2]
+		parent1     = markers[3]
+		parent2     = markers[4]
+		children    = markers[5:]
+
+		if header: 
+			empty_list.append(markers)
+			header = 0
+			continue
+
+		empty_child_mkr_list = []
+
+		for ch_mkrs in children: 
+
+			if missing in ch_mkrs: 
+				empty_child_mkr_list.append( missing )
+				continue
+
+			# Check for progeny homozygosity AND that the progeny homozygous allele is from the HETEROZYGOUS PARENT
+			prog_hom_bool = ch_mkrs[0] == ch_mkrs[1] # Progeny's homozygosity boolean value - homozygous or not
+
+			non_equivalence_bool = (ch_mkrs != parent1) and (ch_mkrs != parent2) # Check to make sure the progeny marker doesn't come from a homozygous parent
+
+			good_marker = prog_hom_bool and non_equivalence_bool # If both, it's good! 
+
+			if good_marker:
+
+				empty_child_mkr_list.append( ch_mkrs )
+
+			else: 
+				empty_child_mkr_list.append( missing )
+
+		empty_list.append( markers[:5] + empty_child_mkr_list )
+
+	csv_printer( transpose(empty_list), output_file )
+
+	output_file.close() 
+
+
 def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 
 	"""Main combines all the functions into one "smooth" workflow!"""
@@ -1131,21 +1206,27 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 		dir_path, file_name = parse_path( path_and_name )
 		test_creator( path_and_name, 65, 1200, 4)
 
-	marker_cleaner( dir_path, file_name )
+	blacklist_file_name = "progeny_ploidy_blacklist.csv"
+	# blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
+
+	marker_cleaner( dir_path, file_name, remove_strangers = 0 )
 	
-	cleaned_file_name = dir_path + "cleaned_" + file_name
+	cleaned_file_name = "cleaned_" + file_name
 	undesirable_file_name = dir_path + "undesirables_" + file_name
 
-	four_to_F2( cleaned_file_name )
+	four_to_F2(  dir_path + cleaned_file_name )
 
 	f2_file_name = "f2_cleaned_" + file_name
 	ploid_f2_file_name = "f2_recleaned_" + file_name
 	if test_bool:
 		blacklist_file_name = "test/blk_list_test.csv"
-	else:
-		# The blacklist file will only remove items that are present, so I've added anything I want to remove from either cross
-		blacklist_file_name = "progeny_ploidy_blacklist.csv"
-		# blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
+
+	# Publishes a file with heterozygous parental alleles and homozygous progeny alleles to help spot LOH'd parental alleles in progeny
+	fwrc_filename = "strangers_" + file_name
+	loh_reco_filename = "loh_deploided_" + file_name
+	loh_reco_cnt_filename = dir_path + "loh_events_" + file_name
+	fourway_deploid_dict, number_o_prog = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
+	loh_reco( dir_path, loh_reco_filename, loh_reco_cnt_filename, centromere_locations, chr_lengths )
 	
 	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_file_name )
 	stack_bar_file_name = dir_path + "stackbar_" + file_name 

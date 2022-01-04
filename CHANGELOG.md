@@ -10,6 +10,13 @@
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
 
 
+## `loh_reco`: 
+
+* Publish and look at the data in an excel file.
+
+* `loh_reco()` removes progeny markers compltely, for some reason... 
+
+
 ## Linear modelling and statistics: 
 
 * Find markers with extreme biases towards one parent or another.
@@ -23,6 +30,30 @@
 ---
 
 # Completed changes: 
+
+### 12/21/21
+
+* Fixed an issue with `marker_cleaner()` to look for matching "c" and "d" alleles in 4way data for the LTD data. The LTD data I made publishes markers where "c" and "d" can be used before "a" and "b". 
+
+* `marker_cleaner()` also no longer removes strange markers when publishing the file containing strange markers. I decoupled those options. Strange markers are always published, but are left in by default. 
+
+
+### 12/20/21
+
+* Figured out why the missing markers aren't being removed...
+	* It was an indentation issue. Unseen syntax error. 
+	* This issue also existed for `recombination_analysis()` and has been fixed. Went from >2000 recombinations to 1800... in the ddRAD 529LxSC data
+
+* `loh_reco()` now receives only parental markers with at least one of them having parental alleles
+
+* `loh_reco()` now removes heterozygous progeny markers for easier downstream processing 
+
+
+### 12/16/21
+
+* Added a second `deploidy` call in `recombiantion_analyzer.py` to create 4way files that have had aneuploid chromosomes removed. 
+	* Now, I can begin work on a LOH recombination function focused on looking for changes in heterozygosity across chromosomes! 
+
 
 ### 12/8/21
 
