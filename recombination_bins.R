@@ -4,6 +4,7 @@ library("ggplot2")
 library("grid")
 library("chisq.posthoc.test")
 library("ggpubr")
+library("diptest")
 
 file_extension = ".png"
 
@@ -450,8 +451,11 @@ recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, the
 	path = path_stuff[1]
 	file = path_stuff[2]
 
-	df = read.csv( rhf_filename ) 
-	x <- ggplot( data = df, aes( x = df[,2] )) + 
+	df = read.csv( rhf_filename )
+
+	recombinations = df[,2]
+
+	x <- ggplot( data = df, aes( x = recombinations )) + 
 	geom_histogram( binwidth = bwidth, color = "black", fill = "white" ) + 
 	labs( x = "", y = "Recombination Frequency" ) + 
 	theme_bw() + 
@@ -477,6 +481,11 @@ recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, the
 	}
 
 	ggsave( paste0( path, "RECO_histo_", substr(file,12,str_length(file)-4 ), ".png" ), width=7, height=7 )
+
+	# dt = dip.test(recombinations)
+	# print(paste0("Results of dip test for modality:"))
+	# print(paste0("Test statistic: ", dt$statistic))
+	# print(paste0("P value: ", dt$p.value))
 
 }
 

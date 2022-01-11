@@ -10,19 +10,17 @@
 * Quantify transition from aa<->bb v. aa<->n/bb<->n
 
 
-## `loh_reco`: 
-
-* Publish and look at the data in an excel file.
-
-* `loh_reco()` removes progeny markers compltely, for some reason... 
-
-
 ## Linear modelling and statistics: 
 
 * Find markers with extreme biases towards one parent or another.
 
+* Multi-modality tests on high-recombinant progeny vs. low-recombinant progeny: [multi-modal distributions](https://en.wikipedia.org/wiki/Multimodal_distribution), look under "General tests" for more information on where to start. 
 
-## Idiot checks and miscellaneous: 
+
+## Before final launch: 
+
+* Rewrite the environment file `recombination_analyzer.yml` 
+	* there have been multiple additions to the code's imported libraries and the `.yml` file needs to be rewritten. 
 
 * Make a Jupyter notebook for the `.git` repository. 
 	* **This repository needs to be made public before it can be made accessible to Binder.**
@@ -30,6 +28,11 @@
 ---
 
 # Completed changes: 
+
+### 1/5/21 
+
+* Rewrote `loh_reco()` in `recombination_analyzer.py` to simplify it and also make it work. I mistakenly thought it did before. 
+
 
 ### 12/21/21
 

@@ -1118,23 +1118,20 @@ def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths
 	# Printing the stats file
 	output_file = open( output_file_name, "w" )
 
-	
 	empty_list = []
-	header = 1
-
+	header_bool = 1
 	for markers in trp_fw_array: 
 
+		if header_bool: 
+			header_bool = 0
+			continue
+
 		chromosomes = markers[0]
-		chr_pos     = markers[1]
+		chr_pos     = int(markers[1])
 		mrkr_cat_id = markers[2]
 		parent1     = markers[3]
 		parent2     = markers[4]
 		children    = markers[5:]
-
-		if header: 
-			empty_list.append(markers)
-			header = 0
-			continue
 
 		empty_child_mkr_list = []
 
@@ -1146,21 +1143,27 @@ def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths
 
 			# Check for progeny homozygosity AND that the progeny homozygous allele is from the HETEROZYGOUS PARENT
 			prog_hom_bool = ch_mkrs[0] == ch_mkrs[1] # Progeny's homozygosity boolean value - homozygous or not
-
 			non_equivalence_bool = (ch_mkrs != parent1) and (ch_mkrs != parent2) # Check to make sure the progeny marker doesn't come from a homozygous parent
-
 			good_marker = prog_hom_bool and non_equivalence_bool # If both, it's good! 
 
 			if good_marker:
-
 				empty_child_mkr_list.append( ch_mkrs )
 
 			else: 
 				empty_child_mkr_list.append( missing )
 
-		empty_list.append( markers[:5] + empty_child_mkr_list )
+		empty_list.append( [chromosomes, chr_pos, mrkr_cat_id, parent1, parent2 ] + empty_child_mkr_list )
 
-	csv_printer( transpose(empty_list), output_file )
+	# All this to properly sort the markers...
+	trp_sorted_list = sorted( empty_list, key=operator.itemgetter(0,1) )
+	trp_sorted_list.insert( 0, trp_fw_array[0] )
+	sorted_list = transpose(trp_sorted_list)
+	str_posit_vals_list = []
+	for position_values in sorted_list[1]: 
+		str_posit_vals_list.append( str(position_values) )
+	sorted_list[1] = str_posit_vals_list
+
+	csv_printer( sorted_list, output_file )
 
 	output_file.close() 
 
