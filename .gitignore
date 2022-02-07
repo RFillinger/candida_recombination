@@ -1,4 +1,13 @@
-token.txt
 github-recovery-codes.txt
 .gitignore
 LTD_Progeny_Markers/p6_sc_compare_contrast/*
+wgs_ddr_529L_comparison.png
+wgs_ddrad_comp.R
+LOH_sequences/
+*.xlsx
+test/
+LTD_Progeny_Markers/mitochondrial_recombination/*
+SCx529L/mitochondria/*
+SCxP60002/mitochondria_chromosome.csv
+mitochondria_chromosome.csv
+

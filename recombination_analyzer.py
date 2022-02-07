@@ -871,7 +871,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 	
 	print( "Total progeny: ", total_progeny )
 	print( "Total recombinations: ", recom_count )
-	print( "Number of putative break-induced replications: ", bir )
+	# print( "Number of putative break-induced replications: ", bir )
 
 	f2_file.close()
 	output_file.close()
@@ -1185,7 +1185,7 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	# Obtaining the chromosomal information from the file!
 	try: 
 		# chr_file = open( dir_path + chr_file_name, "r" ) # Chromosome files in subfolders; you may need to change chr_file_name argument to use the file you want
-		chr_file = open( chr_file_name, "r" )
+		chr_file = open( dir_path + chr_file_name, "r" )
 	except IOError: 
 		print( "Couldn't find the chromosomes file:\n " + chr_file_name + ". \nQuitting..." )
 
@@ -1250,4 +1250,4 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	centromerely_math( chr_lengths, centromere_locations, recom_dict, centro_data_name, resolution = resolve_this ) # takes The dictionary from recombination_analysis(), not recom_Stacker()
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + centro_data_name + " c" )
 
-main()
+main(  )

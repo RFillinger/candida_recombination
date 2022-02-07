@@ -1,6 +1,10 @@
 
 # Upcoming changes:
 
+## Bugs: 
+
+* Incorrect recombination normalization in recom_*.csv files; events are not being tallied in recom.by.col column. 
+
 ## Lab meeting: 
 
 * Make figures showing color-coded recombination for LTD progeny chromosomes of 2 of them. One with the most 529L genotypes and another with a lot of 529L genotypes. 
@@ -17,10 +21,10 @@
 * Multi-modality tests on high-recombinant progeny vs. low-recombinant progeny: [multi-modal distributions](https://en.wikipedia.org/wiki/Multimodal_distribution), look under "General tests" for more information on where to start. 
 
 
-## Before final launch: 
+## Before publication: 
 
 * Rewrite the environment file `recombination_analyzer.yml` 
-	* there have been multiple additions to the code's imported libraries and the `.yml` file needs to be rewritten. 
+	* there have been multiple additions to the code's imported libraries and the `.yml` file needs to be rewritten by `conda`. 
 
 * Make a Jupyter notebook for the `.git` repository. 
 	* **This repository needs to be made public before it can be made accessible to Binder.**
@@ -29,7 +33,7 @@
 
 # Completed changes: 
 
-### 1/5/21 
+### 1/5/22
 
 * Rewrote `loh_reco()` in `recombination_analyzer.py` to simplify it and also make it work. I mistakenly thought it did before. 
 

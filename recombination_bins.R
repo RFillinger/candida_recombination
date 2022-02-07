@@ -123,16 +123,16 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	df = read.csv( path_and_file )
 
 	# Chi-squared test (goodness of fit) lines go here
-	# equal_probability_vector = rep((1/length(df$recom.by.mkr)), length(df$recom.by.mkr)) # Assumes random chance of a recombination for each bin. 
-	# redistribution_vector = rep( round(sum(df$recom.by.mkr)/length(df$recom.by.mkr), 0), length(df$recom.by.mkr) )
+	equal_probability_vector = rep((1/length(df$recom.by.mkr)), length(df$recom.by.mkr)) # Assumes random chance of a recombination for each bin. 
+	redistribution_vector = rep( round(sum(df$recom.by.mkr)/length(df$recom.by.mkr), 0), length(df$recom.by.mkr) )
 
-	# chi_squared = chisq.test( x = df$recom.by.mkr, p = equal_probability_vector )
-	# chi_squared = chisq.test( x = df$recom.by.mkr, y= redistribution_vector )
-	# print( chi_squared$expected  ) # Every value should be above 5
-	# print( chi_squared )
+	chi_squared = chisq.test( x = df$recom.by.mkr, p = equal_probability_vector )
+	chi_squared = chisq.test( x = df$recom.by.mkr, y= redistribution_vector )
+	print( chi_squared$expected  ) # Every value should be above 5
+	print( chi_squared )
 
-	# shap_test = shapiro.test(df$recom.by.mkr) # Test for normalcy of distributions
-	# levene.test( df$recom.by.mkr )
+	shap_test = shapiro.test(df$recom.by.mkr) # Test for normalcy of distributions
+	levene.test( df$recom.by.mkr )
 
 	recom_stdev = sd(df$recom.by.mkr)
 	recom_avg = mean(df$recom.by.mkr)
@@ -177,28 +177,30 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 		labs( y = "Recombinations per Marker", x = NULL ) + 
 		ylim( c(0,ymax)) + 
 		theme_bw() + 
-		theme( panel.grid.major.x = element_blank(), 
+		theme( 
+		 	panel.grid.major.x = element_blank(), 
 			panel.grid.minor.x = element_blank(), 
 			panel.grid.minor.y = element_blank(),
 			panel.border = element_blank(),
-			axis.title.x = element_blank(), 
+			# axis.title.x = element_blank(), 
 			axis.ticks.x = element_blank(), 
 			axis.text.x = element_blank(),
-			axis.title.y = element_blank(), 
-			axis.text.y = element_blank(), 
-			axis.ticks.y = element_blank())
+			# axis.title.y = element_blank(), 
+			# axis.text.y = element_blank(), 
+			# axis.ticks.y = element_blank()
+			)
 
 	if ( add_stdev_lines ){
 		p <- p + geom_hline( yintercept = recom_avg ) + 
 				 geom_hline( yintercept = threshold )
 
-	# 	p <- p + 
-	# 	geom_segment( x = min(unlist(max_sizes)), y = recom_avg, xend = max(unlist(max_sizes)), yend = recom_avg, color = col_1) + 
-	# 	geom_segment( x = min(unlist(max_sizes)), y = threshold, xend = max(unlist(max_sizes)), yend = threshold, color = col_2) + 
-	# 	annotation_custom( textGrob("Mean", gp = gpar( fontsize = 10, col = col_1)), # Adds label to mean line
-	# 						xmin = 0 , xmax = 0, ymin = recom_avg + (ymax*tick_perct), ymax = recom_avg + (ymax*tick_perct) ) + 
-	# 	annotation_custom( textGrob("Mean + 2σ", gp = gpar( fontsize = 10, col = col_2 )), # Adds label to mean line
-	# 						xmin = 0 , xmax = 0, ymin = threshold + (ymax*tick_perct), ymax = threshold + (ymax*tick_perct) )
+		p <- p + 
+		geom_segment( x = min(unlist(max_sizes)), y = recom_avg, xend = max(unlist(max_sizes)), yend = recom_avg, color = col_1) + 
+		geom_segment( x = min(unlist(max_sizes)), y = threshold, xend = max(unlist(max_sizes)), yend = threshold, color = col_2) + 
+		annotation_custom( textGrob("Mean", gp = gpar( fontsize = 10, col = col_1)), # Adds label to mean line
+							xmin = 0 , xmax = 0, ymin = recom_avg + (ymax*tick_perct), ymax = recom_avg + (ymax*tick_perct) ) + 
+		annotation_custom( textGrob("Mean + 2σ", gp = gpar( fontsize = 10, col = col_2 )), # Adds label to mean line
+							xmin = 0 , xmax = 0, ymin = threshold + (ymax*tick_perct), ymax = threshold + (ymax*tick_perct) )
 	}
 
 	# One loop for the delineations 
@@ -209,13 +211,13 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	
 
 	# Second loop for the labels that go under the delineations
-	# i = 1 
-	# for ( chromosomes in names(chr_labs) ){
-	# 	x_spot = round(chr_lengths[[ chromosomes ]]/2 + universal_positions[[ chromosomes ]])
-	# 	p <- p + annotation_custom( textGrob(chr_labs[[chromosomes]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
-	# 					xmin = x_spot , xmax = x_spot, ymin = -tick_perct * ymax, ymax = -tick_perct * ymax )
-	# 	i = i + 1
-	# }
+	i = 1 
+	for ( chromosomes in names(chr_labs) ){
+		x_spot = round(chr_lengths[[ chromosomes ]]/2 + universal_positions[[ chromosomes ]])
+		p <- p + annotation_custom( textGrob(chr_labs[[chromosomes]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
+						xmin = x_spot , xmax = x_spot, ymin = -tick_perct * ymax, ymax = -tick_perct * ymax )
+		i = i + 1
+	}
 
 	if ( add_stdev_lines ){
 		ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_STDEV", file_extension), width=7, height=7 )
@@ -317,11 +319,11 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 	i = 1 
 	for ( centromere in centro_means ){
 		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) # Adds the better custom ticks
-		# p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) +
-				# annotation_custom( textGrob(chr_labs[[i]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
-				# 	xmin = centromere , xmax = centromere, ymin = y_disp, ymax = y_disp ) 
+		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) +
+				annotation_custom( textGrob(chr_labs[[i]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
+					xmin = centromere , xmax = centromere, ymin = y_disp, ymax = y_disp ) 
 				# annotation_custom(segmentsGrob(gp = gpar(col = theme_color, lwd = 2)), # Adds the custom ticks
-        			# xmin = centromere, xmax = centromere, ymin = y_disp, ymax = y_disp)
+    #     			xmin = centromere, xmax = centromere, ymin = y_disp, ymax = y_disp)
 		i = i + 1
 	}
 
@@ -423,21 +425,30 @@ track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bwid
 	labs( x = paste0("Estimated Recombination Size (Kbp) Binsize: ", bwidth), y = "Frequency") +
 	ylim( c(0,ymaximum)) +
 	xlim( c(0,xmaximum)) + 
+
 	theme_bw() + 
-	theme( panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(), 
-			axis.title.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(),
-			panel.grid.minor.y = element_blank(), 
-			axis.title.y = element_blank(),  axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-			panel.border = element_blank() ) 
+	theme( 
+		 	panel.grid.major.x = element_blank(), 
+			panel.grid.minor.x = element_blank(), 
+			panel.grid.minor.y = element_blank(),
+			panel.border = element_blank(),
+			# axis.title.x = element_blank(), 
+			axis.ticks.x = element_blank(), 
+			axis.text.x = element_blank(),
+			# axis.title.y = element_blank(), 
+			# axis.text.y = element_blank(), 
+			# axis.ticks.y = element_blank()
+			)
 
 	# Loop for the delineations
 	# x_spots = c(0,500,1000,1500,2000)
 	x_spots = c(0,250,500,750)
 
 	for ( tickmarks in x_spots ){
-		g <- g + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.03* ymaximum, color = theme_color)  
-				# annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels
-				# 		xmin = tickmarks , xmax = tickmarks, ymin = -0.025* (ymaximum-1), ymax = -0.025* (ymaximum-1) )
+		g <- g + 
+			geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.015* ymaximum, color = theme_color) +
+			annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels
+						xmin = tickmarks , xmax = tickmarks, ymin = -0.035* ymaximum, ymax = -0.035* ymaximum )
 	}
 
 	ggsave( paste0( path, substr( file, 1, str_length(file)-4 ), file_extension ), width=7, height=7 )
@@ -460,24 +471,28 @@ recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, the
 	labs( x = "", y = "Recombination Frequency" ) + 
 	theme_bw() + 
 	ylim( c(0,ymaximum)) +
-	xlim( c(0,105)) + 
-	theme( panel.grid.major.x = element_blank(), 
+	xlim(c(0,105)) + 
+	# xlim( c(0,100)) + 
+	theme( 
+		 	panel.grid.major.x = element_blank(), 
 			panel.grid.minor.x = element_blank(), 
-			panel.grid.minor.y = element_blank(), 
+			panel.grid.minor.y = element_blank(),
 			panel.border = element_blank(),
-			axis.title.x = element_blank(), 
+			# axis.title.x = element_blank(), 
 			axis.ticks.x = element_blank(), 
 			axis.text.x = element_blank(),
-			axis.title.y = element_blank(), 
-			axis.ticks.y = element_blank(), 
-			axis.text.y = element_blank() ) 
+			# axis.title.y = element_blank(), 
+			# axis.text.y = element_blank(), 
+			# axis.ticks.y = element_blank()
+			)
 
 	# Loop for the delineations
 	x_spots = c(5,25,50,75,100)
+	# x_spots = c(0,100,200,300,400,500,600)
 	for ( tickmarks in x_spots ){
-		x <- x + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.03* ymaximum, color = theme_color)  
-				# annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels
-				# 		xmin = tickmarks , xmax = tickmarks, ymin = -0.025* (ymaximum-1), ymax = -0.025* (ymaximum-1) )
+		x <- x + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.015* ymaximum, color = theme_color) +
+				annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels
+						xmin = tickmarks , xmax = tickmarks, ymin = -0.035* ymaximum, ymax = -0.035* ymaximum )
 	}
 
 	ggsave( paste0( path, "RECO_histo_", substr(file,12,str_length(file)-4 ), ".png" ), width=7, height=7 )
