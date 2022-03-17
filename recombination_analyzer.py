@@ -219,6 +219,7 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 	untrp_leels = csv_reader( four_way_file ) # Load the file, but it needs to be transposed
 	leels = transpose( untrp_leels )
 
+	
 	try: 
 		if blacklisted:
 			blacklist_file = open( dir_path + blacklist_file_name, "r" )
@@ -236,12 +237,14 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 		print( "# This file is for removing markers that STACKS miscalled; use IGV to manually curate \"suspicious\"",\
 		" (highly recombinant) markers from f2_recleaned_" + file_name + ".", file = blacklist_file)
 
+	removed_count = 0
 	if blacklisted: 
 		before = len(leels) 
 		for markers in leels: 
 			marker_num = markers[2].strip()
 			if marker_num in blk_mkr_list: 
 				leels.remove(markers)
+				removed_count += 1
 		after =  len(leels) 
 		blk_lst_rmv = before - after
 
@@ -312,10 +315,10 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 		print( "No markers removed. Did you already prune your data? It's suspiciously clean.")
 	else: 
 		if blacklisted:
-			print( "marker_cleaner removed ", len(chuckers) - 1 + stranger_count , \
-			# " markers (", 100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count), "%","removed )\n", \
-			# "in addition to", blk_lst_rmv, "black-listed markers." )
-			" markers (", str(100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count)) + "%" + " removed )" )
+			print()
+			print( "Removed ", len(chuckers) - 1 + stranger_count , \
+			" markers (", 100*round((len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count),3), "% )" )
+			print("Removed using remove_markers.csv:", blk_lst_rmv  )
 		else:
 			print( "marker_cleaner removed ", len(chuckers) - 1 + stranger_count, \
 				" markers (", str(100*(len(chuckers)-1+ stranger_count)/(len(chuckers)-1+len(keepers)-1+stranger_count)) + "%" + " removed )")
@@ -339,7 +342,7 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 		srt_strangers = sorted( strangers, key = operator.itemgetter(0,1) )
 		srt_chuckers = sorted( chuckers, key=operator.itemgetter(0,1) )
 		for lines in srt_chuckers:
-			lines[1] = str(lines[1]) # Convert back to strings so they can be output. 
+			lines[1] = str(lines[1]) # Convert back to strings so they can be outpooted. 
 			lines[2] = str(lines[2]) 
 
 		for lines in srt_strangers:
@@ -411,7 +414,8 @@ def four_to_F2( cleaned_file_name ):
 
 
 def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_file_name = "", \
-				mark_strangers = 1, replace_strange = "-", quit_on_no_strange = 0 ): 
+				empty_mrk = "-", replace_strange = "-", quit_on_no_strange = 0, \
+				parent_1_name = "SC5314", parent_2_name = "529L_" ): 
 
 	""" This function removes entire progeny, aneuploid chromosomes, or individual markers (after manually checking them) from further analysis. 
 	I also don't really think that this has to be relegated to f2 data, it could definitely be put 
@@ -420,8 +424,11 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	# Obtain my f2 data and the blacklist
 	f2_geno_file = open( dir_path + f2_file_name, "r" )
 	f2_geno_array = csv_reader( f2_geno_file )
+	f2_geno_file.close()
+
 	blklist_file = open( blacklist_file_name, "r" )
 	blk_list_array = csv_reader( blklist_file )
+	blklist_file.close()
 	
 	# Move the data from the black list file and relabel them into a dictionary
 	ploid_dict = {}
@@ -448,7 +455,7 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	# In the f2 file, find indexes of markers for each chromosome (or marker numbers, though indexes will be more flexible to other pieces of data)
 	chromosomes = f2_geno_array[0]
 	chr_pos = f2_geno_array[1]
-	mkr_number = f2_geno_array[2]
+	mkr_number_list = f2_geno_array[2]
 	parent_1 = f2_geno_array[3]
 	parent_2 = f2_geno_array[4]
 	strains = f2_geno_array[5:] # This does not include the parents...
@@ -475,15 +482,15 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 				else:
 					remove_dict[ prog_name ] = remove_dict[ prog_name ] + chr_index_dict[ chromosome ]
 
-	# Construct the container for the cleaned data
+	# Construct the container for the cleaned data; nothing is altered from the existing data
 	deploid_dict = {}
 	deploid_dict[ chromosomes[0] ] = chromosomes[1:]
 	deploid_dict[ chr_pos[0] ] = []
 	for pos in chr_pos[1:]: 
 		deploid_dict[ chr_pos[0] ].append( str(pos) )
-	deploid_dict[ mkr_number[0] ] = []
-	for num in mkr_number[1:]: 
-		deploid_dict[ mkr_number[0] ].append( str(num) )
+	deploid_dict[ mkr_number_list[0] ] = []
+	for num in mkr_number_list[1:]: 
+		deploid_dict[ mkr_number_list[0] ].append( str(num) )
 	deploid_dict[ parent_1[0] ] = parent_1[1:]
 	deploid_dict[ parent_2[0] ] = parent_2[1:]
 
@@ -508,57 +515,6 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 		else: 
 			deploid_dict[ prog_name ] = single_strain[1:]
 
-	try:
-		strange_marker_file = open( dir_path + "strange_markers.csv", "r" )
-		strange_mkr_list = csv_reader( strange_marker_file )
-		strange_cat_nums = strange_mkr_list[2]
-	
-	except IOError: 
-		if quit_on_no_strange: 
-			quit()
-		else: 
-			print("Could not find " + dir_path + "strange_markers.csv. We wrote an empty file to fill." )
-			# strange_marker_file = open( dir_path + "strange_markers.csv", "w" )
-		mark_strangers = 0 
-
-	except IndexError: 
-		print( "No manually curated markers in " + dir_path + "strange_markers.csv. Default behavior is to continue without them.")
-		mark_strangers = 0 
-	
-	if mark_strangers:	
-
-		strange_prog_dict = {}
-		for csv_lines in strange_mkr_list: 
-			prog_name = csv_lines[0]
-			strange_prog_dict[ prog_name ] = csv_lines[1:]
-		# Find indexes in cleaned_markers where strange markers are
-		strange_idx_list = []
-		for index in range(1,len(mkr_number)): 
-			if int(mkr_number[ index ]) in strange_cat_nums:
-				strange_idx_list.append(index-1)
-
-		for idx in strange_idx_list: 
-			for prog_name, mkr_list in deploid_dict.items():
-
-				# Parental names shouldn't be too much of a problem because they shouldn't contain any x's
-				if  ("529L_" in prog_name)        or \
-					("SC5314" in prog_name)       or \
-					("Chromosome" in prog_name)   or \
-					("Chr_Position" in prog_name) or \
-					("# Catalog ID" in prog_name): 
-					continue
-
-				new_marker_index = strange_idx_list.index(idx)
-				new_marker = strange_prog_dict[prog_name][new_marker_index].strip()
-
-				if mkr_list[ idx ] == "-": 
-					continue
-				else: 
-					if new_marker == "x": 
-						mkr_list[ idx ] = replace_strange 
-					else: 
-						mkr_list[ idx ] = new_marker 
-
 	ploid_f2_file = open( dir_path + ploid_f2_file_name, "w" )
 	csv_printer( deploid_dict, ploid_f2_file )
 	ploid_f2_file.close()
@@ -566,6 +522,71 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	number_o_prog = len( deploid_dict )-5 
 
 	return deploid_dict, number_o_prog
+
+
+def replace_mkrs( dir_path, ploid_f2_file_name, out_file_name, chr_labs, blacklist_file_name = "", \
+				empty_mrk = "-", rplc_strange_bool = 1, replace_strange = "-", strange = "x" ):
+	
+	# Load in the genotyping data 
+	f2_geno_file = open( dir_path + ploid_f2_file_name, "r" )
+	trp_f2_geno_array = transpose(csv_reader( f2_geno_file ))
+	f2_geno_file.close()
+
+	# Load in the manually-curated strange marker file for replacing markers
+	strange_marker_file = open( dir_path + "strange_markers.csv", "r" )
+	strange_mkr_list = transpose(csv_reader( strange_marker_file ))
+
+	# Convert genotyping data into a dictionary, stored as keys
+	f2_dat_dict = {}
+	for markers in trp_f2_geno_array: 
+		f2_dat_dict[ markers[2] ] = markers
+
+	# Convert replacment marker data into dictionary
+	rplc_mkrs_dict = {}
+	for markers in strange_mkr_list: 
+		rplc_mkrs_dict[markers[2]] = markers
+
+	# To avoid errors, extract names from both and remove the ones that are no longer present. 
+	strange_set = set()
+	for names in strange_mkr_list[0][3:]: 
+		strange_set.add(names.strip())
+
+	final_set = set()
+	for names in trp_f2_geno_array[0][5:]:
+		final_set.add(names.strip()) 
+
+	diff_set = strange_set - final_set
+	if len(diff_set) > 0:
+		print( "There are progeny in strange_markers.csv that are absent in", ploid_f2_file_name, "that need to be removed." )
+		for progs in diff_set: 
+			print(progs)
+	
+	count = 0
+
+	# Make sure that the replacements have something to give, or there will be ann error
+	if len( rplc_mkrs_dict ) != 0: 
+		for cat_nums, other_stuff in rplc_mkrs_dict.items(): 
+			if cat_nums in f2_dat_dict: 
+				rplc_mkr_list = rplc_mkrs_dict[ cat_nums ][3:]
+				for index in range(0,len( rplc_mkr_list )):
+					new_marker = rplc_mkr_list[index]
+					if rplc_mkr_list[index].strip() != "":
+						if (rplc_mkr_list[index].strip() == strange) and rplc_strange_bool: 
+							f2_dat_dict[ cat_nums ][index + 5] = replace_strange
+						else:
+							f2_dat_dict[ cat_nums ][index + 5] = rplc_mkr_list[index]
+								
+						count += 1
+
+		new_marker_array = []
+		for cat_num, marker in f2_dat_dict.items():
+			new_marker_array.append( marker )
+
+		output_file = open( dir_path + out_file_name, "w" )
+		csv_printer( transpose(new_marker_array), output_file )
+		output_file.close()
+
+	print( "Markers replaced or removed using strange_markers.csv: ", count )
 
 
 def marker_tally_ho( strain_marker_dictionary, stack_bar_file_name, \
@@ -960,16 +981,18 @@ def recom_Stacker( chr_lengths, recom_dict, total_progeny, output_file_name, res
 
 			total = int_a + int_b + int_h + int_s + int_m # Every marker, present or absent
 
-			mkr_loci_count = total // total_progeny
+			mkr_loci_count = total_progeny - (total // total_progeny)
 			id_mkr_cnt = total - int_m # Every marker with an identifiable genotype (excludes missing markers)
 
 			try: 
 				recom_by_loci_cnt = round( int_freq / mkr_loci_count, 4 )
-				recom_by_mkr_cnt = round( int_freq / id_mkr_cnt, 4 )
-
 			except ZeroDivisionError: 
 				recom_by_loci_cnt = 0
-				recom_by_mkr_cnt = 0 
+				 
+			try: 
+				recom_by_mkr_cnt = round( int_freq / id_mkr_cnt, 4 )
+			except ZeroDivisionError: 
+				recom_by_mkr_cnt = 0
 
 			prt_lc = str( recom_by_loci_cnt )
 			prt_rmc = str( recom_by_mkr_cnt )
@@ -1207,7 +1230,7 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	if test_bool: 
 		path_and_name = "test/test.csv"
 		dir_path, file_name = parse_path( path_and_name )
-		test_creator( path_and_name, 65, 1200, 4)
+		test_creator( path_and_name, 5, 1200, 4)
 
 	blacklist_file_name = "progeny_ploidy_blacklist.csv"
 	# blacklist_file_name = "blank_blacklist.csv" # Use this line to compare "before and after" blacklisting
@@ -1220,25 +1243,27 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	four_to_F2(  dir_path + cleaned_file_name )
 
 	f2_file_name = "f2_cleaned_" + file_name
-	ploid_f2_file_name = "f2_recleaned_" + file_name
+	recleaned_f2_file_name = "f2_recleaned_" + file_name
 	if test_bool:
 		blacklist_file_name = "test/blk_list_test.csv"
 
-	# Publishes a file with heterozygous parental alleles and homozygous progeny alleles to help spot LOH'd parental alleles in progeny
-	fwrc_filename = "strangers_" + file_name
-	loh_reco_filename = "loh_deploided_" + file_name
-	loh_reco_cnt_filename = dir_path + "loh_events_" + file_name
-	fourway_deploid_dict, number_o_prog = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
-	loh_reco( dir_path, loh_reco_filename, loh_reco_cnt_filename, centromere_locations, chr_lengths )
+	# # Publishes a file with heterozygous parental alleles and homozygous progeny alleles to help spot LOH'd parental alleles in progeny
+	# fwrc_filename = "strangers_" + file_name
+	# loh_reco_filename = "loh_deploided_" + file_name
+	# loh_reco_cnt_filename = dir_path + "loh_events_" + file_name
+	# fourway_deploid_dict, number_o_prog = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
+	# loh_reco( dir_path, loh_reco_filename, loh_reco_cnt_filename, centromere_locations, chr_lengths )
 	
-	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_file_name )
+	# THis one is the normal stuff. 
+	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, recleaned_f2_file_name, chr_labs, blacklist_file_name )
+	replace_mkrs( dir_path, recleaned_f2_file_name, recleaned_f2_file_name, chr_labs ) ############### Important one. 
 	stack_bar_file_name = dir_path + "stackbar_" + file_name 
 	marker_tally_ho( deploid_dict, stack_bar_file_name )
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + stack_bar_file_name + " s " )
 
 	prog_recom_count_filename = dir_path + "recom-count_" + file_name
 	stats_file_name = dir_path + "statistics_" + file_name
-	recom_dict, total_progeny = recombination_analysis( dir_path, ploid_f2_file_name, stats_file_name, prog_recom_count_filename, centromere_locations, chr_lengths )
+	recom_dict, total_progeny = recombination_analysis( dir_path, recleaned_f2_file_name, stats_file_name, prog_recom_count_filename, centromere_locations, chr_lengths )
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + stats_file_name + " h " + prog_recom_count_filename  )
 
 	resolve_this = 10000

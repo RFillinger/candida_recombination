@@ -123,16 +123,16 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	df = read.csv( path_and_file )
 
 	# Chi-squared test (goodness of fit) lines go here
-	equal_probability_vector = rep((1/length(df$recom.by.mkr)), length(df$recom.by.mkr)) # Assumes random chance of a recombination for each bin. 
-	redistribution_vector = rep( round(sum(df$recom.by.mkr)/length(df$recom.by.mkr), 0), length(df$recom.by.mkr) )
+	# equal_probability_vector = rep((1/length(df$recom.by.mkr)), length(df$recom.by.mkr)) # Assumes random chance of a recombination for each bin. 
+	# redistribution_vector = rep( round(sum(df$recom.by.mkr)/length(df$recom.by.mkr), 0), length(df$recom.by.mkr) )
 
-	chi_squared = chisq.test( x = df$recom.by.mkr, p = equal_probability_vector )
-	chi_squared = chisq.test( x = df$recom.by.mkr, y= redistribution_vector )
-	print( chi_squared$expected  ) # Every value should be above 5
-	print( chi_squared )
+	# chi_squared = chisq.test( x = df$recom.by.mkr, p = equal_probability_vector )
+	# chi_squared = chisq.test( x = df$recom.by.mkr, y= redistribution_vector )
+	# print( chi_squared$expected  ) # Every value should be above 5
+	# print( chi_squared )
 
-	shap_test = shapiro.test(df$recom.by.mkr) # Test for normalcy of distributions
-	levene.test( df$recom.by.mkr )
+	# shap_test = shapiro.test(df$recom.by.mkr) # Test for normalcy of distributions
+	# levene.test( df$recom.by.mkr )
 
 	recom_stdev = sd(df$recom.by.mkr)
 	recom_avg = mean(df$recom.by.mkr)
