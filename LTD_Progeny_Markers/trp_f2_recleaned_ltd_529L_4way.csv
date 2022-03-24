@@ -111,7 +111,7 @@ Ca21chr1_C_albicans_SC5314,60613,439,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,62747,446,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,62899,448,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,64607,452,1,2,n,n,n,n,n
-Ca21chr1_C_albicans_SC5314,65477,455,1,2,n,n,n,n,n
+Ca21chr1_C_albicans_SC5314,65477,455,1,2,n,n,n,n,-
 Ca21chr1_C_albicans_SC5314,65987,457,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,66035,458,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,66215,459,1,2,n,n,n,n,n
@@ -577,7 +577,7 @@ Ca21chr1_C_albicans_SC5314,375483,2726,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,376443,2732,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,378409,2750,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,378410,2751,1,2,n,n,n,n,n
-Ca21chr1_C_albicans_SC5314,378414,2752,1,2,n,n,1,n,n
+Ca21chr1_C_albicans_SC5314,378414,2752,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,379392,2767,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,379400,2768,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,379479,2769,1,2,n,n,n,n,n
@@ -1180,7 +1180,7 @@ Ca21chr1_C_albicans_SC5314,1056775,7865,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1056822,7866,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1057390,7870,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1057979,7871,1,2,n,n,n,n,1
-Ca21chr1_C_albicans_SC5314,1057991,7872,1,2,n,1,n,1,1
+Ca21chr1_C_albicans_SC5314,1057991,7872,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1059853,7896,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1062284,7919,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1062303,7920,1,2,n,n,n,n,n
@@ -1454,8 +1454,8 @@ Ca21chr1_C_albicans_SC5314,1251719,9472,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1253780,9478,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1255424,9490,1,2,1,1,1,2,-
 Ca21chr1_C_albicans_SC5314,1255885,9494,1,2,1,1,1,2,-
-Ca21chr1_C_albicans_SC5314,1256253,9498,1,2,n,1,n,1,n
-Ca21chr1_C_albicans_SC5314,1256260,9499,1,2,1,1,1,1,1
+Ca21chr1_C_albicans_SC5314,1256253,9498,1,2,n,n,n,n,n
+Ca21chr1_C_albicans_SC5314,1256260,9499,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1257732,9504,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1258263,9507,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1258307,9508,1,2,n,n,n,n,n
@@ -1554,8 +1554,8 @@ Ca21chr1_C_albicans_SC5314,1356476,10191,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1357108,10194,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1357420,10198,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1357503,10201,1,2,n,n,n,n,n
-Ca21chr1_C_albicans_SC5314,1357732,10202,1,2,n,1,n,1,n
-Ca21chr1_C_albicans_SC5314,1357735,10203,1,2,1,1,n,1,n
+Ca21chr1_C_albicans_SC5314,1357732,10202,1,2,-,-,-,-,-
+Ca21chr1_C_albicans_SC5314,1357735,10203,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1357790,10204,1,2,n,n,n,n,1
 Ca21chr1_C_albicans_SC5314,1357868,10205,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1357982,10208,1,2,n,n,n,n,n
@@ -1763,7 +1763,6 @@ Ca21chr1_C_albicans_SC5314,1563043,11777,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1563529,11780,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1563639,11781,1,2,n,n,n,1,n
 Ca21chr1_C_albicans_SC5314,1563640,11782,1,2,n,n,n,1,n
-Ca21chr1_C_albicans_SC5314,1564098,11787,1,2,2,2,2,1,n
 Ca21chr1_C_albicans_SC5314,1564798,11793,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1565663,11806,1,2,n,n,n,n,n
 Ca21chr1_C_albicans_SC5314,1566952,11823,1,2,n,n,n,n,n
@@ -3849,7 +3848,7 @@ Ca21chr2_C_albicans_SC5314,261143,26284,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,261701,26287,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,262118,26290,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,262193,26292,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,262397,26294,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,262397,26294,1,2,-,-,-,n,n
 Ca21chr2_C_albicans_SC5314,262410,26295,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,262700,26297,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,262900,26299,1,2,n,n,n,2,n
@@ -4003,7 +4002,7 @@ Ca21chr2_C_albicans_SC5314,446558,27552,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,448275,27573,1,2,2,-,2,2,n
 Ca21chr2_C_albicans_SC5314,454606,27627,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,455791,27644,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,456171,27645,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,456171,27645,1,2,-,-,-,n,n
 Ca21chr2_C_albicans_SC5314,461602,27688,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,464937,27728,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,465842,27737,1,2,n,n,n,2,n
@@ -4342,12 +4341,12 @@ Ca21chr2_C_albicans_SC5314,928339,31088,1,2,n,n,n,2,1
 Ca21chr2_C_albicans_SC5314,928519,31089,1,2,n,1,n,-,1
 Ca21chr2_C_albicans_SC5314,928523,31090,1,2,n,1,n,-,1
 Ca21chr2_C_albicans_SC5314,933697,31142,1,2,n,n,n,-,-
-Ca21chr2_C_albicans_SC5314,933701,31143,1,2,n,1,n,-,-
+Ca21chr2_C_albicans_SC5314,933701,31143,1,2,-,-,-,-,-
 Ca21chr2_C_albicans_SC5314,934009,31152,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,934640,31159,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,935929,31162,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,936403,31167,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,938208,31190,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,938208,31190,1,2,-,-,-,-,n
 Ca21chr2_C_albicans_SC5314,938226,31191,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,938544,31195,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,943068,31228,1,2,n,n,n,2,n
@@ -4502,7 +4501,7 @@ Ca21chr2_C_albicans_SC5314,1100939,32427,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1101687,32432,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1101696,32433,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1102398,32437,1,2,n,n,n,2,1
-Ca21chr2_C_albicans_SC5314,1102705,32442,1,2,n,2,n,2,n
+Ca21chr2_C_albicans_SC5314,1102705,32442,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1103241,32444,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1104174,32448,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1105175,32451,1,2,n,n,n,2,n
@@ -4645,7 +4644,7 @@ Ca21chr2_C_albicans_SC5314,1239400,33413,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1239443,33414,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1239481,33415,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1242698,33445,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1243905,33452,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1243905,33452,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1244055,33453,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1244086,33455,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1244677,33457,1,2,n,n,n,2,n
@@ -4782,7 +4781,7 @@ Ca21chr2_C_albicans_SC5314,1321083,34064,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1321726,34069,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1322417,34075,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1323193,34082,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1323199,34083,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1323199,34083,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1324259,34092,1,2,n,n,n,n,1
 Ca21chr2_C_albicans_SC5314,1324536,34093,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1325286,34101,1,2,n,n,n,2,n
@@ -4855,7 +4854,7 @@ Ca21chr2_C_albicans_SC5314,1390742,34538,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1391637,34545,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1392131,34549,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1395086,34572,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1395409,34576,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1395409,34576,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1395412,34577,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1396351,34584,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1403575,34632,1,2,n,n,n,2,n
@@ -5081,7 +5080,7 @@ Ca21chr2_C_albicans_SC5314,1657297,36543,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1657363,36544,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1657620,36545,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1658011,36547,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1658431,36551,1,2,2,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1658431,36551,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1661106,36560,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1670024,36619,1,2,n,n,1,-,-
 Ca21chr2_C_albicans_SC5314,1672003,36633,1,2,n,n,n,2,n
@@ -5247,7 +5246,7 @@ Ca21chr2_C_albicans_SC5314,1809025,37699,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1809502,37701,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1809540,37702,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1809617,37703,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1810076,37708,1,2,2,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1810076,37708,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1811774,37723,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1811930,37727,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1812056,37730,1,2,n,n,n,2,n
@@ -5425,7 +5424,7 @@ Ca21chr2_C_albicans_SC5314,1932536,38573,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1932596,38574,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1937984,38616,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1938147,38617,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1938696,38621,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1938696,38621,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1939603,38625,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1939683,38626,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1942196,38641,1,2,n,n,n,2,n
@@ -5472,7 +5471,7 @@ Ca21chr2_C_albicans_SC5314,1982217,38922,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1982880,38927,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1986382,38958,1,2,1,1,1,2,2
 Ca21chr2_C_albicans_SC5314,1994173,39020,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,1994290,39021,1,2,n,n,n,2,n
+Ca21chr2_C_albicans_SC5314,1994290,39021,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,1994334,39023,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1994738,39026,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,1994875,39028,1,2,n,n,n,2,n
@@ -5517,7 +5516,7 @@ Ca21chr2_C_albicans_SC5314,2019404,39270,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,2020531,39281,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,2020846,39283,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,2024422,39311,1,2,n,n,n,2,n
-Ca21chr2_C_albicans_SC5314,2024762,39315,1,2,n,2,n,2,n
+Ca21chr2_C_albicans_SC5314,2024762,39315,1,2,-,-,-,2,n
 Ca21chr2_C_albicans_SC5314,2024945,39317,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,2025583,39325,1,2,n,n,n,2,n
 Ca21chr2_C_albicans_SC5314,2025616,39326,1,2,n,n,n,2,n
@@ -6378,7 +6377,7 @@ Ca21chr3_C_albicans_SC5314,363360,43011,1,2,n,n,n,n,1
 Ca21chr3_C_albicans_SC5314,366486,43036,1,2,n,n,n,n,1
 Ca21chr3_C_albicans_SC5314,369692,43049,1,2,n,n,n,n,1
 Ca21chr3_C_albicans_SC5314,369693,43050,1,2,n,n,n,n,1
-Ca21chr3_C_albicans_SC5314,369698,43051,1,2,n,n,n,1,1
+Ca21chr3_C_albicans_SC5314,369698,43051,1,2,n,n,n,n,1
 Ca21chr3_C_albicans_SC5314,371006,43055,1,2,n,n,n,n,1
 Ca21chr3_C_albicans_SC5314,371081,43056,1,2,n,n,n,n,1
 Ca21chr3_C_albicans_SC5314,376551,43089,1,2,n,n,n,n,1
@@ -10092,7 +10091,7 @@ Ca21chr4_C_albicans_SC5314,992633,59617,1,2,1,1,1,-,n
 Ca21chr4_C_albicans_SC5314,992636,59618,1,2,1,1,1,-,n
 Ca21chr4_C_albicans_SC5314,992637,59619,1,2,1,1,1,-,n
 Ca21chr4_C_albicans_SC5314,993050,59620,1,2,1,1,1,2,n
-Ca21chr4_C_albicans_SC5314,993080,59621,1,2,1,1,1,n,n
+Ca21chr4_C_albicans_SC5314,993080,59621,1,2,1,1,1,2,n
 Ca21chr4_C_albicans_SC5314,993926,59624,1,2,1,1,1,2,n
 Ca21chr4_C_albicans_SC5314,995933,59632,1,2,1,1,1,2,n
 Ca21chr4_C_albicans_SC5314,996035,59635,1,2,1,1,1,2,n
@@ -11690,7 +11689,7 @@ Ca21chr5_C_albicans_SC5314,932805,71727,1,2,2,2,2,1,n
 Ca21chr5_C_albicans_SC5314,936285,71757,1,2,2,2,2,1,n
 Ca21chr5_C_albicans_SC5314,938118,71775,1,2,2,2,-,1,n
 Ca21chr5_C_albicans_SC5314,939765,71798,1,2,2,2,2,1,n
-Ca21chr5_C_albicans_SC5314,941743,71813,1,2,2,2,2,1,1
+Ca21chr5_C_albicans_SC5314,941743,71813,1,2,2,2,2,1,n
 Ca21chr5_C_albicans_SC5314,941753,71814,1,2,2,2,2,1,n
 Ca21chr5_C_albicans_SC5314,941757,71815,1,2,2,2,2,1,n
 Ca21chr5_C_albicans_SC5314,943376,71835,1,2,2,2,2,1,n
@@ -12681,11 +12680,11 @@ Ca21chr6_C_albicans_SC5314,570898,78260,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,570922,78261,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,570973,78262,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,571027,78263,1,2,n,n,n,n,n
-Ca21chr6_C_albicans_SC5314,571188,78264,1,2,n,n,1,n,n
-Ca21chr6_C_albicans_SC5314,571191,78265,1,2,1,n,1,n,n
-Ca21chr6_C_albicans_SC5314,571192,78266,1,2,1,n,1,1,n
-Ca21chr6_C_albicans_SC5314,571349,78267,1,2,1,n,1,n,n
-Ca21chr6_C_albicans_SC5314,571360,78268,1,2,1,1,1,1,n
+Ca21chr6_C_albicans_SC5314,571188,78264,1,2,n,n,n,n,n
+Ca21chr6_C_albicans_SC5314,571191,78265,1,2,n,n,n,n,n
+Ca21chr6_C_albicans_SC5314,571192,78266,1,2,n,n,n,n,n
+Ca21chr6_C_albicans_SC5314,571349,78267,1,2,n,n,n,n,n
+Ca21chr6_C_albicans_SC5314,571360,78268,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,571564,78271,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,571672,78272,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,571750,78273,1,2,n,n,n,n,n
@@ -12735,9 +12734,9 @@ Ca21chr6_C_albicans_SC5314,586605,78379,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,586620,78380,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,586869,78382,1,2,n,1,n,n,n
 Ca21chr6_C_albicans_SC5314,586870,78383,1,2,n,1,n,n,n
-Ca21chr6_C_albicans_SC5314,586872,78384,1,2,1,1,n,n,n
-Ca21chr6_C_albicans_SC5314,586920,78385,1,2,n,n,n,1,n
-Ca21chr6_C_albicans_SC5314,586953,78386,1,2,n,n,n,1,n
+Ca21chr6_C_albicans_SC5314,586872,78384,1,2,n,n,n,n,n
+Ca21chr6_C_albicans_SC5314,586920,78385,1,2,n,n,n,n,n
+Ca21chr6_C_albicans_SC5314,586953,78386,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,587160,78388,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,587166,78389,1,2,n,n,n,n,n
 Ca21chr6_C_albicans_SC5314,587664,78393,1,2,n,n,n,n,n
@@ -13377,8 +13376,7 @@ Ca21chr7_C_albicans_SC5314,19262,81769,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,19454,81770,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,19652,81772,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,20624,81785,1,2,n,n,n,n,n
-Ca21chr7_C_albicans_SC5314,20628,81786,1,2,1,1,1,1,1
-Ca21chr7_C_albicans_SC5314,20637,81787,1,2,1,1,1,1,1
+Ca21chr7_C_albicans_SC5314,20637,81787,1,2,-,-,-,-,-
 Ca21chr7_C_albicans_SC5314,20681,81788,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,21494,81790,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,21593,81792,1,2,n,n,n,n,n
@@ -15098,9 +15096,9 @@ Ca21chr7_C_albicans_SC5314,919870,87543,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,920267,87544,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,920924,87545,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,921807,87546,1,2,n,n,n,n,n
-Ca21chr7_C_albicans_SC5314,921893,87547,1,2,n,1,n,1,n
-Ca21chr7_C_albicans_SC5314,921894,87548,1,2,n,1,n,1,n
-Ca21chr7_C_albicans_SC5314,921897,87549,1,2,n,1,1,n,n
+Ca21chr7_C_albicans_SC5314,921893,87547,1,2,n,n,n,n,n
+Ca21chr7_C_albicans_SC5314,921894,87548,1,2,n,n,n,n,n
+Ca21chr7_C_albicans_SC5314,921897,87549,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,922264,87553,1,2,n,n,n,n,n
 Ca21chr7_C_albicans_SC5314,923359,87554,1,2,1,n,n,1,1
 Ca21chr7_C_albicans_SC5314,923425,87555,1,2,n,n,n,n,n
@@ -15224,8 +15222,8 @@ Ca21chrR_C_albicans_SC5314,17637,87720,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,17892,87721,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,17971,87723,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,19008,87736,1,2,n,n,n,n,n
-Ca21chrR_C_albicans_SC5314,19437,87743,1,2,n,1,1,n,n
-Ca21chrR_C_albicans_SC5314,19449,87744,1,2,n,n,1,1,n
+Ca21chrR_C_albicans_SC5314,19437,87743,1,2,n,n,n,n,n
+Ca21chrR_C_albicans_SC5314,19449,87744,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,19647,87748,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,19707,87749,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,20856,87757,1,2,n,n,n,n,n
@@ -15469,8 +15467,6 @@ Ca21chrR_C_albicans_SC5314,128175,88460,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,128395,88461,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,128627,88462,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,128935,88463,1,2,n,n,n,n,n
-Ca21chrR_C_albicans_SC5314,128976,88466,1,2,1,n,1,1,n
-Ca21chrR_C_albicans_SC5314,128983,88468,1,2,1,n,1,1,1
 Ca21chrR_C_albicans_SC5314,129502,88471,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,129867,88474,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,132690,88483,1,2,n,n,n,n,n
@@ -16091,9 +16087,9 @@ Ca21chrR_C_albicans_SC5314,548500,91498,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,549337,91506,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,549391,91508,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,549618,91509,1,2,n,n,n,2,n
-Ca21chrR_C_albicans_SC5314,552192,91517,1,2,1,n,1,n,n
-Ca21chrR_C_albicans_SC5314,552196,91518,1,2,1,n,1,n,n
-Ca21chrR_C_albicans_SC5314,552200,91519,1,2,1,1,1,1,1
+Ca21chrR_C_albicans_SC5314,552192,91517,1,2,n,n,n,n,n
+Ca21chrR_C_albicans_SC5314,552196,91518,1,2,n,n,n,n,n
+Ca21chrR_C_albicans_SC5314,552200,91519,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,552426,91522,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,556154,91558,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,557896,91570,1,2,n,n,n,n,n
@@ -16136,7 +16132,7 @@ Ca21chrR_C_albicans_SC5314,592109,91863,1,2,1,1,1,2,1
 Ca21chrR_C_albicans_SC5314,594765,91894,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,596791,91912,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,597256,91919,1,2,n,n,n,n,n
-Ca21chrR_C_albicans_SC5314,597272,91920,1,2,1,1,1,1,1
+Ca21chrR_C_albicans_SC5314,597272,91920,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,599192,91929,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,599313,91930,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,599525,91931,1,2,n,n,n,n,n
@@ -16656,9 +16652,7 @@ Ca21chrR_C_albicans_SC5314,1015579,94834,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1015999,94837,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1016019,94838,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1021063,94873,1,2,n,n,n,n,n
-Ca21chrR_C_albicans_SC5314,1021125,94874,1,2,n,1,n,n,n
 Ca21chrR_C_albicans_SC5314,1021137,94875,1,2,n,1,n,n,n
-Ca21chrR_C_albicans_SC5314,1021143,94876,1,2,1,1,1,1,n
 Ca21chrR_C_albicans_SC5314,1022472,94885,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1022589,94888,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1022873,94890,1,2,n,n,n,n,n
@@ -17732,7 +17726,7 @@ Ca21chrR_C_albicans_SC5314,1737962,99763,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1738870,99774,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1740493,99785,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1742453,99804,1,2,n,n,n,n,n
-Ca21chrR_C_albicans_SC5314,1746401,99836,1,2,2,2,2,n,2
+Ca21chrR_C_albicans_SC5314,1746401,99836,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1746901,99837,1,2,-,-,-,n,2
 Ca21chrR_C_albicans_SC5314,1748664,99843,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1748747,99844,1,2,n,n,n,n,n
@@ -17742,7 +17736,6 @@ Ca21chrR_C_albicans_SC5314,1749790,99855,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1750273,99856,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1750807,99860,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1759281,99935,1,2,n,n,n,n,n
-Ca21chrR_C_albicans_SC5314,1759600,99937,1,2,n,1,n,n,1
 Ca21chrR_C_albicans_SC5314,1759607,99938,1,2,n,1,n,n,1
 Ca21chrR_C_albicans_SC5314,1760038,99943,1,2,n,n,n,n,n
 Ca21chrR_C_albicans_SC5314,1760217,99945,1,2,n,n,n,n,n

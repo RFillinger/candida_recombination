@@ -158,6 +158,9 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 
 	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), ".recom_hist", file_extension ), width=7, height=7 )
 
+	chr_vec = c()
+	chr_reco_vec = c()
+
 	chromosomes <- unique( df$chr )
 	max_sizes = vector( mode="list", length=length( chromosomes ) )
 	names( max_sizes ) = as.vector(chromosomes)
@@ -165,10 +168,28 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 		# Subset the data frame to obtain the maximum sizes of chromosomes in the df
 		chr_subset = df[df$chr == chromosome, ]
 		max_sizes[[chromosome]] <- max(chr_subset$univ.pos) 
+
+		# Find the number of rows (bins) in the chromosome and the sum of all normalized recombinations
+		bin_num = nrow( chr_subset )
+		sum_totes = sum(chr_subset$recom.by.mkr)
+		chromosomal_recom = sum_totes/bin_num
+		
+		chr_vec = c(chr_vec, chromosome)
+		chr_reco_vec = c(chr_reco_vec, chromosomal_recom)
+
 	}
 
-	chromosomes_delineations = unlist(max_sizes)[c(1:length(chromosomes)-1)] 
+	cnr = data.frame( chr_vec, chr_reco_vec )
+	v <- ggplot( data = cnr, aes( x = chr_vec, y = chr_reco_vec ) ) + 
+		geom_col( color = "cyan" ) + 
+		theme(  axis.title.y = element_blank(),
+				axis.title.x = element_blank(),
+				axis.text.x = element_text(angle = 45, vjust = 0.5)) + 
+		lims(y = c(0,0.06))
+	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_NORMALIZED_RECOMS", file_extension), width=7, height=7 )
 
+
+	chromosomes_delineations = unlist(max_sizes)[c(1:length(chromosomes)-1)] 
 	y_disp = -(ymax*tick_perct) + 15
 
 	p <- ggplot( data = df, aes( x = `univ.pos`, y = `recom.by.mkr` )  ) + 
@@ -281,7 +302,7 @@ lmp <- function (modelobject) {
 
 
 centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_positions, chr_labs, model_dat, 
-							ymaximum = 200, tick_perct = 0.01, theme_color = "black" ) {
+							ymax = 200, tick_perct = 0.01, theme_color = "black", line_Width = .1 ) {
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
@@ -306,24 +327,43 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 		max_sizes[[chromosome]] <- max(chr_subset$absolute_pos) 
 	}
 
+	xmax = max(df$absolute_pos)
+
 	p <- ggplot( data = df, aes( x = `absolute_pos`, y = `cumulative_recom_cnt` )  ) + 
-		geom_step( aes(color = `chromosome`) ) + 
-		theme_minimal( ) +  
+		geom_step( aes(color = `chromosome`, lwd = line_Width ) ) + 
+		theme_bw() +  
 		theme( legend.position = "none", axis.text.x = element_blank() ) + 
-		ylim( c(0,ymaximum)) + 
-		labs( x = NULL, y = "Cumulative Recombination" )
+		ylim( c(0,ymax)) + 
+		# labs( x = NULL, y = "Cumulative Recombination" )
+
+		theme( 
+		 	panel.grid.major.x = element_blank(), 
+		 	# panel.grid.major.y = element_blank(),
+			panel.grid.minor.x = element_blank(), 
+			panel.grid.minor.y = element_blank(),
+			panel.border = element_blank(),
+			axis.title.x = element_blank(), 
+			axis.ticks.x = element_blank(), 
+			axis.text.x  = element_blank(),
+			axis.title.y = element_blank(), 
+			axis.text.y  = element_blank(), 
+			axis.ticks.y = element_blank()
+			) + 
+
+		geom_segment( x = 0, y = 0,      xend = 0,    yend = ymax,   color = theme_color) + # y-Axis
+		geom_segment( x = 0, y = 0,      xend = xmax, yend = 0,      color = theme_color) + # x-Axis
+		geom_segment( x = 0, y = ymax/2, xend = xmax, yend = ymax/2, color = theme_color) + # Half way point
+		geom_segment( x = 0, y = ymax,   xend = xmax, yend = ymax,   color = theme_color)   # Tippy top
 		
 	# I hate that I have to do this... it adds ticks and lines and editable labels to the graph where the centromeres are. Ugh.
-	y_disp = -(ymaximum*tick_perct) - 5 
+	y_disp = -(ymax*tick_perct) - 5 
 
 	i = 1 
 	for ( centromere in centro_means ){
-		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) # Adds the better custom ticks
-		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymaximum, color = theme_color ) +
-				annotation_custom( textGrob(chr_labs[[i]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
-					xmin = centromere , xmax = centromere, ymin = y_disp, ymax = y_disp ) 
-				# annotation_custom(segmentsGrob(gp = gpar(col = theme_color, lwd = 2)), # Adds the custom ticks
-    #     			xmin = centromere, xmax = centromere, ymin = y_disp, ymax = y_disp)
+		p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymax, color = theme_color ) # Adds the better custom ticks
+		# p <- p + geom_segment( x = centromere, y = 0, xend = centromere, yend = tick_perct * ymax, color = theme_color ) +
+		# 		annotation_custom( textGrob(chr_labs[[i]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
+		# 			xmin = centromere , xmax = centromere, ymin = y_disp, ymax = y_disp ) 
 		i = i + 1
 	}
 
@@ -336,11 +376,11 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 
 	# 	if (i%%2 == 1){
 	# 		x_loc = round(chr_lengths[[chr_name]]*(1/4)) + universal_positions[[chr_name]]
-	# 		y_loc = ymaximum*0.9
+	# 		y_loc = ymax*0.9
 
 	# 	} else {
 	# 		x_loc = round(chr_lengths[[chr_name]]*(3/4)) + universal_positions[[chr_name]]
-	# 		y_loc = ymaximum*0.7
+	# 		y_loc = ymax*0.7
 	# 	}
 
 	# 	arm_model = lm (model_dat[[ arms ]]$cumulative_recom_cnt ~ model_dat[[ arms ]]$absolute_pos)
@@ -364,7 +404,7 @@ centro_graphs <- function( path_and_file, centromeres, chr_lengths, universal_po
 	# 			annotation_custom( textGrob( r2_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the r squared values
 	# 				xmin = x_loc , xmax = x_loc, ymin = y_loc, ymax = y_loc ) #+ 
 	# 			# annotation_custom( textGrob( model_p_val, gp = gpar( fontsize = 7, col = theme_color)), # Adds the p-values
-	# 			# 	xmin = x_loc, xmax = x_loc, ymin = y_loc - 0.05*ymaximum, ymax = y_loc - 0.05*ymaximum )
+	# 			# 	xmin = x_loc, xmax = x_loc, ymin = y_loc - 0.05*ymax, ymax = y_loc - 0.05*ymax )
 	# 	i = i + 1
 	# }
 
@@ -551,7 +591,7 @@ main <- function() {
 		}
 
 		if ( graphs == "c" ) {
-			centro_ymax = 600 # This will depend on the number of progeny you have; remember this includes recombinations across all of them.  
+			centro_ymax = 500 # This will depend on the number of progeny you have; remember this includes recombinations across all of them.  
 			model_dat = modelling_data_prep( path_and_file, chr_lengths )
 			centro_graphs( path_and_file, centromeres, chr_lengths, univ_pos, chr_labs, model_dat, ymax = centro_ymax)
 		}

@@ -1007,7 +1007,7 @@ def recom_Stacker( chr_lengths, recom_dict, total_progeny, output_file_name, res
 
 
 def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_file_name, \
-						resolution = 100000, count_incentro_bool = 0, left_arm = "left",\
+						resolution = 1000, count_incentro_bool = 0, left_arm = "left",\
 						right_arm = "right", centromere = "centromere" ): 
 
 	""" Calculate cumulative recombination as a function of distance from centromeres """
@@ -1089,6 +1089,7 @@ def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_fil
 				cyuum_recoms[ chromosomes ][ centromere ] = centro_total
 		else: 
 			cyuum_recoms[ chromosomes ][ centromere ] = centro_total  
+	
 
 		# Accumulate recombination events from the lowest chromosomal position to the highest
 		upstream_total = centro_total 
@@ -1125,6 +1126,43 @@ def centromerely_math( chr_lengths, centromere_locations, recom_dict, output_fil
 			arm = events[2]
 			print( ",".join([ chromosomes, str(events[0]), str(absolute_pos), str(accumulated_recom_count), events[2] ]), file = centro_file )
 
+	centro_file.close()
+
+
+def centro_func_two( recom_dict, chr_lengths, centromere_locations, output_file_name ): 
+
+	output_file = open( output_file_name, "w")
+	print( "strain,chr,start.pos,length,prop.o.arm,arm", file = output_file)
+	for strain_name in recom_dict:
+		for reco_or_tally, reco_tal_dict in recom_dict[ strain_name ].items(): 
+			for recom_event_str in recom_dict[ strain_name ][ "recoms" ]:
+				
+				recom_event = recom_event_str.split(",")
+				chromosome = recom_event[0]
+				start_pos  = int(recom_event[1])
+				reco_len   = int(recom_event[2])
+
+				centro_left_bound = int(centromere_locations[chromosome][0])
+				centro_rite_bound = int(centromere_locations[chromosome][1])
+				chr_end = int(chr_lengths[chromosome])
+
+				left_arm = [ 0, centro_left_bound ]
+				rite_arm = [ centro_rite_bound, chr_end ]
+
+				# Normalize 
+				if (start_pos <= centro_left_bound) and (start_pos >= 0):
+					arm = "left"
+					prop_o_arm = round((centro_left_bound - start_pos)/centro_left_bound, 4 )
+				elif (start_pos >= centro_rite_bound) and (start_pos <= chr_end):
+					arm = "right"
+					prop_o_arm = round((start_pos-centro_rite_bound)/(chr_end-centro_rite_bound), 4)
+				else: # Inside the centromere 
+					arm = "centromere"
+					prop_o_arm = 0
+
+				print(",".join([strain_name, chromosome, str(start_pos), str(reco_len), str(prop_o_arm), arm]), file = output_file )
+
+	output_file.close()
 
 def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths, missing = "-"):
 	
@@ -1274,5 +1312,8 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	centro_data_name = dir_path + "centro_" + file_name
 	centromerely_math( chr_lengths, centromere_locations, recom_dict, centro_data_name, resolution = resolve_this ) # takes The dictionary from recombination_analysis(), not recom_Stacker()
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + centro_data_name + " c" )
+
+	second_centro_data = dir_path + "CENTO_two_" + file_name
+	centro_func_two( recom_dict, chr_lengths, centromere_locations, second_centro_data )
 
 main(  )
