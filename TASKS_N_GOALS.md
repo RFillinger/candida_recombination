@@ -3,6 +3,7 @@
 - # 2
 - # 4
 
+- # 9
 - # 10
 
 - # 19
@@ -10,14 +11,12 @@
 - # 21
 - # 22
 - # 23
-- # 24
 
-- # 30 
+- # 30
 - # 31
 - # 32
-- # 33
 
-1. ~~Recombination along the chromosome relative to the centromere.~~  ~~**Still need to do the chr5 recombination part of this figure.**~~ **Vetted all the markers in centromeres; no recombinatons in them.**
+1. ~~Recombination along the chromosome relative to the centromere.~~ **Vetted all the markers in centromeres; no recombinatons in them.**
 
 2. Make the mitochondrial main figure panel circular. 
 
@@ -40,6 +39,7 @@ P6xSC ddRAD-Seq: "1"-30821, "2"- 20, "n"-395, total_informative-31236, 1.3% Het)
 8. ~~Number of recombination events in each of the two matings (upper and lower bounds)~~ **Max: 102 recombinations, Min: 0 recombinations**
 
 9. ~~Is the distribution of recombination tract lengths a Poisson for either mating?~~ **This one is more complicated than initially thought. It turns out pretty much any unimodal distribution is a Poisson distribution and it's a matter of calculating the lambda coefficient. The smaller the lambda, the more likely that smaller values will be more frequent on the distribution. SCx529L lambda = 0.506, SCxP60002 lambda = 0.506; both of these distributions of recombinant fragment sizes are front-heavy and likely to be smaller, which makes sense. This was calculated by graphing log(fragment size frequency) by log(fragment size) and fitting a linear model. The slope of the linear model is lambda. I had to compress the data down to just 10 bins because log functions don't play well with zeroes, so I'm unsure of the quality of the lambdas that I measured, but it jives with what we've got.**
+    **Redo these calculations with more bins. Should be pretty simple...** 
     1. ddRAD: SCx529L lambda = 0.506
     2. ddRAD: SCxP60002 lambda = 0.506
     3. WGS:   SCx529L lambda = 0.509
@@ -76,23 +76,21 @@ P6xSC ddRAD-Seq: "1"-30821, "2"- 20, "n"-395, total_informative-31236, 1.3% Het)
 
 23. Compile supplemental figures with their main-figure counterparts
 
-24. Write methods section
+24. ~~Write methods section~~
 
 25. ~~Inform Anna and Abhishek of their respective method section writing duties~~
 
 26. ~~We need to know the number of progeny for each mating (SCx529L and SCxP6).~~ **SCx529L: 75 Progeny, SCxP60002: 70 Progeny**
 
-27. ~~What is the tract length for the WGS dataset for SCx529L progeny (min/max).~~ **MAX: 724659 bp, MIN: 1 bp**
+27. ~~Check a few of the 1+ nt recombinations in the WGS data.~~ **This is a long story... but a complete one! I rewrote the pipeline to deal with strange markers and replacement markers that have been manually curated** 
 
-28. ~~Check a few of the 1+ nt recombinations in the WGS data.~~ **This is a long story... but a complete one! I rewrote the pipeline to deal with strange markers and replacement markers that have been manually curated** 
+28. ~~The number of markers for ddRAD-Seq of both matings and for WGS analysis in SCx529L~~ **(SCxP6 ddRAD: 740, SCx529L ddRAD: 678, SCx529L WGS: 18623)**
 
-29. ~~The number of markers for ddRAD-Seq of both matings and for WGS analysis in SCx529L~~ **(SCxP6 ddRAD: 740, SCx529L ddRAD: 678, SCx529L WGS: 18623)**
+29. ~~Break the variants between SC5314 and 529L or P60002 into SNPs and indels. How many of each?~~ **I did this with the SNP_counter.py script in the Desktop. 529L SNPs/INDELs: 133808/21535 (155343 total), P60002 SNPs/INDELs: 73518/4650 (78168 total)**
 
-30. Break the variants between SC5314 and 529L or P6002 into SNPs and indels. How many of each?
+30. ~~LOH recombination figure and pipeline~~ **Done!** 
 
-31. LOH recombination figure 
+31. Rewrite elements of the paper to include this data. 
 
-32. Rewrite elements of the paper to include this data. 
-
-33. Graph in Figure 4 is missing data; fix this in the `phenotypes_graph_maker.R` program
+32. Graph in Figure 4 is missing data; fix this in the `phenotypes_graph_maker.R` program
 

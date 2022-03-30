@@ -924,7 +924,7 @@ def recom_Stacker( chr_lengths, recom_dict, total_progeny, output_file_name, res
 		chr_bin_dict = {}
 		tal_bin_dict = {}
 
-		stop = length-(length%resolution)+resolution
+		stop = length-(length%resolution)+resolution # Extends the length of the chromosome to include a final bin
 		
 		for i in range(0, stop, resolution):
 			chr_bin_dict[ i ] = 0
@@ -985,7 +985,7 @@ def recom_Stacker( chr_lengths, recom_dict, total_progeny, output_file_name, res
 			id_mkr_cnt = total - int_m # Every marker with an identifiable genotype (excludes missing markers)
 
 			try: 
-				recom_by_loci_cnt = round( int_freq / mkr_loci_count, 4 )
+				recom_by_loci_cnt = round( int_freq / mkr_loci_count, 4 ) # This doesn't work, use recom_by_mkr_cnt instead. 
 			except ZeroDivisionError: 
 				recom_by_loci_cnt = 0
 				 
@@ -1164,6 +1164,7 @@ def centro_func_two( recom_dict, chr_lengths, centromere_locations, output_file_
 
 	output_file.close()
 
+
 def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths, missing = "-"):
 	
 	"""This function takes markers with 3 or more alleles across both parents
@@ -1229,6 +1230,134 @@ def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths
 	output_file.close() 
 
 
+def loh_reco_f2_converter_mapper( dir_path, fw_file_name, output_file_name, output_2_file_name, centromeres, chr_lengths, missing = "-", resolution = 100000 ): 
+
+	''' 
+	This converts 4_way LOH data from loh_reco to F2 data for recombination analysis 
+	(which will also be different than the normal recombination analysis) 
+	This could be worked into \'loh_reco\' above, but it wasn't working and getting more complex. 
+	So I took the simpler route and wrote this. 
+	'''
+
+	total = 0
+	univ_chr_dict = {}
+	for chromosomes, lengths in chr_lengths.items(): 
+		univ_chr_dict[ chromosomes ] = total
+		total += int(lengths+resolution)
+
+	fw_file = open( fw_file_name, "r" ) # Strangers
+	fw_array = csv_reader( fw_file )
+	fw_file.close()
+
+	trp_fw_array = transpose(fw_array)
+
+	trp_f2_array = []
+	trp_f2_array.append( trp_fw_array[0] )
+
+	header = 1
+	for markers in trp_fw_array: 
+		
+		if header: 
+			header = 0
+			continue
+
+		chromosomes = markers[0]
+		chr_pos     = markers[1]
+		mrkr_cat_id = markers[2]
+		parent1     = markers[3]
+		parent2     = markers[4]
+		children    = markers[5:]
+
+		empty_child_mkr_list = []
+
+		for ch_mkrs in children: 
+
+			if (missing in ch_mkrs) or (missing == ch_mkrs): 
+				empty_child_mkr_list.append( missing )
+				# continue
+
+			else:
+				# Check to make sure progeny markers are exclusive 
+				if (ch_mkrs[0] in parent1) and not (ch_mkrs[0] in parent2): #ch_mkrs has two parts, but they are identical (see `loh_reco` function)
+					new_child_mkr = "1"
+				elif (ch_mkrs[0] in parent2) and not (ch_mkrs[0] in parent1):
+					new_child_mkr = "2" 
+				else: 
+					print( "Something is wrong with this marker: ", markers )
+					quit()
+
+				empty_child_mkr_list.append( new_child_mkr )
+
+		trp_f2_array.append( [chromosomes, chr_pos, mrkr_cat_id, "1", "2" ] + empty_child_mkr_list )
+
+	f2_array = transpose(trp_f2_array )
+	# Printing the output file
+	output_file = open( output_file_name, "w" )
+	csv_printer( f2_array, output_file )
+	output_file.close()
+
+
+	loh_recom_bins = {} 
+	tally_dict = {} 
+
+	for chromo, length in chr_lengths.items(): 
+		chr_bin_dict = {}
+
+		stop = length-(length%resolution)+resolution # Extends the length of the chromosome to include a final bin
+		
+		for i in range(0, stop, resolution):
+			chr_bin_dict[ i ] = {"recom":0, "total":0}
+
+		loh_recom_bins[ chromo ] = chr_bin_dict
+
+	# Indicate bins that have a loss-of-heterozygosity event
+	header = 1
+	for markers in trp_f2_array: 
+		
+		if header: 
+			header = 0
+			continue
+
+		chromosomes = markers[0]
+		chr_pos     = int(markers[1])
+		mrkr_cat_id = markers[2]
+		parent1     = markers[3]
+		parent2     = markers[4]
+		children    = markers[5:]
+
+		marker_bin = chr_pos - (chr_pos % resolution) 
+		
+		for prog_mkrs in children: 
+
+			if (missing in prog_mkrs) or (missing == prog_mkrs): 
+				loh_recom_bins[ chromosomes ][ marker_bin ][ "total" ] += 1 
+
+			elif ( "1" in prog_mkrs ) or ( "2" in prog_mkrs ): 
+				loh_recom_bins[ chromosomes ][ marker_bin ][ "recom" ] += 1
+				loh_recom_bins[ chromosomes ][ marker_bin ][ "total" ] += 1
+
+	new_file = open( output_2_file_name, "w")
+
+	print( "chr,chr_pos,univ.pos,recoms,total_mkrs,recom.by.mkr", file = new_file )
+
+	for chromosomes in loh_recom_bins: 
+		for bins in loh_recom_bins[ chromosomes ]: 
+			
+			prt_univ_pos = str( bins + univ_chr_dict[ chromosomes ]) 
+
+			RCO = loh_recom_bins[ chromosomes ][bins]["recom"]
+			TOT = loh_recom_bins[ chromosomes ][bins]["total"]
+			
+			try: 
+				RBM = RCO/TOT
+			except ZeroDivisionError: 
+				RBM = 0
+
+			print(",".join([chromosomes, str(bins), prt_univ_pos, str(RCO), str(TOT), str(RBM) ]), file = new_file )
+
+	new_file.close()
+
+
 def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 
 	"""Main combines all the functions into one "smooth" workflow!"""
@@ -1285,14 +1414,19 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	if test_bool:
 		blacklist_file_name = "test/blk_list_test.csv"
 
-	# # Publishes a file with heterozygous parental alleles and homozygous progeny alleles to help spot LOH'd parental alleles in progeny
-	# fwrc_filename = "strangers_" + file_name
-	# loh_reco_filename = "loh_deploided_" + file_name
-	# loh_reco_cnt_filename = dir_path + "loh_events_" + file_name
-	# fourway_deploid_dict, number_o_prog = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
-	# loh_reco( dir_path, loh_reco_filename, loh_reco_cnt_filename, centromere_locations, chr_lengths )
+	# Publishes a file with heterozygous parental alleles and homozygous progeny alleles to help spot LOH'd parental alleles in progeny
+	fwrc_filename = "strangers_" + file_name
+	loh_reco_filename = "loh_deploided_" + file_name
+	loh_reco_cnt_filename = dir_path + "loh_events_" + file_name
+	fourway_deploid_dict, number_o_prog = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
+	loh_reco( dir_path, loh_reco_filename, loh_reco_cnt_filename, centromere_locations, chr_lengths )
 	
-	# THis one is the normal stuff. 
+	f2_loh_file_name = dir_path + "f2_loh_events_" + file_name
+	loh_reco_event_file_name = dir_path + "STACKAROONEY_" + file_name
+	loh_reco_f2_converter_mapper( dir_path, loh_reco_cnt_filename, f2_loh_file_name, loh_reco_event_file_name, centromere_locations, chr_lengths )
+	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + loh_reco_event_file_name + " loh" )
+
+	# This one is the normal stuff. 
 	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, recleaned_f2_file_name, chr_labs, blacklist_file_name )
 	replace_mkrs( dir_path, recleaned_f2_file_name, recleaned_f2_file_name, chr_labs ) ############### Important one. 
 	stack_bar_file_name = dir_path + "stackbar_" + file_name 

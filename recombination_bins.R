@@ -156,7 +156,7 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 	# 	annotation_custom( textGrob("Mean + 2σ", gp = gpar( fontsize = 10, col = col_2 )), # Adds label to mean line
 	# 						xmin = threshold , xmax = threshold, ymin = y_pos, ymax = y_pos )
 
-	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), ".recom_hist", file_extension ), width=7, height=7 )
+	# ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), ".recom_hist", file_extension ), width=7, height=7 )
 
 	chr_vec = c()
 	chr_reco_vec = c()
@@ -545,6 +545,87 @@ recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, the
 }
 
 
+loh_reco <- function( path_and_file, chr_labs, chr_lengths, universal_positions,  
+							ymax = 1, tick_perct = 0.025, theme_color = "black" ){ 
+
+	path = path_components( path_and_file )[1]
+	file = path_components( path_and_file )[2]
+
+	df = read.csv( path_and_file )
+
+	recom_stdev = sd(df$recom.by.mkr)
+	recom_avg = mean(df$recom.by.mkr)
+	threshold = recom_avg + (2*recom_stdev) # represents 95% of data
+
+	big_bins = df[df$recom.by.mkr>threshold,]
+
+	y_pos = -0.5
+
+	chr_vec = c()
+	chr_reco_vec = c()
+
+	chromosomes <- unique( df$chr )
+	max_sizes = vector( mode="list", length=length( chromosomes ) )
+	names( max_sizes ) = as.vector(chromosomes)
+	for ( chromosome in chromosomes ){
+		# Subset the data frame to obtain the maximum sizes of chromosomes in the df
+		chr_subset = df[df$chr == chromosome, ]
+		max_sizes[[chromosome]] <- max(chr_subset$univ.pos) 
+
+		# Find the number of rows (bins) in the chromosome and the sum of all normalized recombinations
+		bin_num = nrow( chr_subset )
+		sum_totes = sum(chr_subset$recom.by.mkr)
+		chromosomal_recom = sum_totes/bin_num
+		
+		chr_vec = c(chr_vec, chromosome)
+		chr_reco_vec = c(chr_reco_vec, chromosomal_recom)
+
+	}
+
+
+	chromosomes_delineations = unlist(max_sizes)[c(1:length(chromosomes)-1)] 
+	y_disp = -(ymax*tick_perct) + 15
+
+	p <- ggplot( data = df, aes( x = `univ.pos`, y = `recom.by.mkr` )  ) + 
+		geom_col( ) + 
+		# geom_vline( xintercept = chromosomes_delineations, size = 0.2, color = color ) + 
+		labs( y = "Recombinations per Marker", x = NULL ) + 
+		ylim( c(0,ymax)) + 
+		theme_bw() + 
+		theme( 
+		 	panel.grid.major.x = element_blank(), 
+			panel.grid.minor.x = element_blank(), 
+			panel.grid.minor.y = element_blank(),
+			panel.border = element_blank(),
+			axis.title.x = element_blank(), 
+			axis.ticks.x = element_blank(), 
+			axis.text.x = element_blank(),
+			axis.title.y = element_blank(), 
+			axis.text.y = element_blank(), 
+			axis.ticks.y = element_blank()
+			)
+
+	# One loop for the delineations 
+	for ( chromosomes in names(chromosomes_delineations) ){
+		x_spot = chr_lengths[[chromosomes]] + universal_positions[[ chromosomes ]]
+		p <- p + geom_segment( x = x_spot, y = 0, xend = x_spot, yend = -tick_perct * ymax, color = theme_color)
+	}
+	
+
+	# Second loop for the labels that go under the delineations
+	i = 1 
+	for ( chromosomes in names(chr_labs) ){
+		x_spot = round(chr_lengths[[ chromosomes ]]/2 + universal_positions[[ chromosomes ]])
+		p <- p + annotation_custom( textGrob(chr_labs[[chromosomes]], gp = gpar( fontsize = 17, col = theme_color)), # Adds the chromosome labels
+						xmin = x_spot , xmax = x_spot, ymin = -tick_perct * ymax, ymax = -tick_perct * ymax )
+		i = i + 1
+	}
+
+	ggsave( paste0(path, "LOH_", substr( file, 1, str_length(file)-4 ), file_extension), width=7, height=7 )
+
+}
+
+
 main <- function() {
 
 	args = commandArgs( trailingOnly = TRUE )
@@ -601,6 +682,12 @@ main <- function() {
 
 			recom_histo( rhg_filename, path_and_file, bwidth = 5 )
 			track_lengths( path_and_file, chr_labs, chr_lengths, univ_pos, bwidth = 10 )
+		}
+
+		if ( graphs == "loh" ){ 
+
+			loh_reco( path_and_file, chr_labs, chr_lengths, univ_pos )
+
 		}
 	})
 
