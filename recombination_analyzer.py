@@ -712,7 +712,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 		progs_dict[progeny[0]] = info_sub_dict
 
 	# Begin assessing recombination:
-	bir = 0 		  # bir = break-induced replication: recombinations that go to the end of the chromosomes
+	bir = 0 		  # bir = "break-induced replication": recombinations that go to the end of the chromosomes. Although it should be stated that these are definitely not provable
 	recom_count = 0   # The total number of recombinations across all progeny
 	total_progeny = 0 # The total number of progeny
 
@@ -1230,7 +1230,9 @@ def loh_reco( dir_path, fw_file_name, output_file_name, centromeres, chr_lengths
 	output_file.close() 
 
 
-def loh_reco_f2_converter_mapper( dir_path, fw_file_name, output_file_name, output_2_file_name, centromeres, chr_lengths, missing = "-", resolution = 100000 ): 
+def loh_reco_f2_converter_mapper( dir_path, fw_file_name, \
+	output_file_name, output_2_file_name, output_3_file_name, \
+	centromeres, chr_lengths, missing = "-", resolution = 100000 ): 
 
 	''' 
 	This converts 4_way LOH data from loh_reco to F2 data for recombination analysis 
@@ -1296,9 +1298,52 @@ def loh_reco_f2_converter_mapper( dir_path, fw_file_name, output_file_name, outp
 	csv_printer( f2_array, output_file )
 	output_file.close()
 
+	recom_count_file = open(output_3_file_name, "w")
+	header = "progeny,grouped.loh.count,loh.mkr.count"
+	print(header, file = recom_count_file)
+
+	num_o_mkrs = len(f2_array[0])
+	loh_recom_dict = {}
+	
+	for progeny in f2_array[5:]: 
+		
+		prog_name = progeny[0]
+		loh_recom_dict[prog_name] = [[],0,0]
+		loh_window = []
+
+		for index in range(1,num_o_mkrs): 
+
+			loh_bool = (progeny[index] != "-") # In this particular data format, any present allele indicates an LOH event
+			
+			if loh_bool: 
+				loh_recom_dict[prog_name][2] += 1
+				loh_window.append(index)
+				last_one_bool = (index == num_o_mkrs)
+
+				if last_one_bool:
+					# Analysis of the loh_event (particularly size) goes here
+					loh_recom_dict[prog_name][0].append(loh_window)
+					loh_recom_dict[prog_name][1] += 1
+					loh_window = []
+
+				else:
+					try: 
+						loh_end_bool = (progeny[index] != progeny[index+1])
+					except IndexError: 
+						loh_end_bool = 1
+
+					if loh_end_bool: 
+						# Analysis of the loh_event (particularly size) goes here
+						loh_recom_dict[prog_name][0].append(loh_window)
+						loh_recom_dict[prog_name][1] += 1
+						loh_window = []
+
+		print( ",".join([prog_name, str(loh_recom_dict[prog_name][1]), str(loh_recom_dict[prog_name][2]) ]), file = recom_count_file )
+
+	recom_count_file.close()
+
 
 	loh_recom_bins = {} 
-	tally_dict = {} 
 
 	for chromo, length in chr_lengths.items(): 
 		chr_bin_dict = {}
@@ -1314,7 +1359,7 @@ def loh_reco_f2_converter_mapper( dir_path, fw_file_name, output_file_name, outp
 	header = 1
 	for markers in trp_f2_array: 
 		
-		if header: 
+		if header:
 			header = 0
 			continue
 
@@ -1423,7 +1468,8 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	
 	f2_loh_file_name = dir_path + "f2_loh_events_" + file_name
 	loh_reco_event_file_name = dir_path + "STACKAROONEY_" + file_name
-	loh_reco_f2_converter_mapper( dir_path, loh_reco_cnt_filename, f2_loh_file_name, loh_reco_event_file_name, centromere_locations, chr_lengths )
+	loh_reco_cnt_file_name = dir_path + "LOH_recom-count_" + file_name 
+	loh_reco_f2_converter_mapper( dir_path, loh_reco_cnt_filename, f2_loh_file_name, loh_reco_event_file_name, loh_reco_cnt_file_name, centromere_locations, chr_lengths )
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + loh_reco_event_file_name + " loh" )
 
 	# This one is the normal stuff. 

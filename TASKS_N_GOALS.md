@@ -1,36 +1,38 @@
 # To Do's:
 
-- # 2
-- # 4
+1. ~~Recombination along the chromosome relative to the centromere.~~ **Vetted all the markers in centromeres; no recombinations in them.**
 
-- # 9
-- # 10
+2. ~~Make the mitochondrial main figure panel circular.~~
+        
+    1. Making consensus fasta sequences:
 
-- # 19
-- # 20
-- # 21
-- # 22
-- # 23
+        samtools view -b MAY157_ca21_aligned.sorted.bam Ca19-mtDNA > Prog_MAY157_ChrM.bam
+        
+        bedtools bamtofastq -i Prog_MAY157_ChrM.bam -fq MAY157_mito.fq
 
-- # 30
-- # 31
-- # 32
+        samtools mpileup -uf IGV/C_albicans_SC5314_A21_current_chromosomes.fasta Prog_MAY157_ChrM.bam | bcftools call -c | vcfutils.pl vcf2fq > Prog_MAY157_consensus.fastq
 
-1. ~~Recombination along the chromosome relative to the centromere.~~ **Vetted all the markers in centromeres; no recombinatons in them.**
+        seqtk seq -aQ64 -q20 -n N Prog_MAY157_consensus.fastq > Prog_MAY157_consensus.fasta                
 
-2. Make the mitochondrial main figure panel circular. 
+    2. Investigate the following tools for making circular figures:
+        
+        a. ~~Circleator~~
+        b. ~~CIRCUS <- this looks very promising, and works in R~~, but doesn't produce `.png` files and is dedicated to interactive `.html` files.  
+        c. ~~CircosVCF~~
+        d. [circlize](https://jokergoo.github.io/circlize_book/book/circular-layout.html) <- This is the one. 
 
-3. ~~How many SNPs between SC5314 and P60002 and SC5314 and 529L~~  **157,900 (yes, that is the exact number) unique SNPs  and INDELS between MAY1 and 529L, not including the mitochondria. 73,518 unique SNPs and INDELs between MAY1 and P60002, also not including the mitochondria**
 
-4. Need images of opaques for mating parents
+3. ~~How many SNPs between SC5314 and P60002 and SC5314 and 529L~~ **157,900 (yes, that is the exact number) unique SNPs  and INDELS between MAY1 and 529L, not including the mitochondria. 73,518 unique SNPs and INDELs between MAY1 and P60002, also not including the mitochondria**
+
+4. ~~Need images of opaques for mating parents~~
     1. ~~Plate strains from storage to YPD (MAY 73, MAY 85)~~
     2. ~~Streak onto SCD~~
-    3. Photograph opaque sectors
-    4. Photograph opaque cells under microscope
+    3. ~~Photograph opaque sectors~~
+    4. ~~Photograph opaque cells under microscope~~
 
-5. ~~Calculate similarity in aneuploid profile for each mating pair (Figure 1C)~~ **No difference between distributions of aneuploidy (Kruskal-Wallis:  chi-squared = 0.0116099, p-val = 0.91419)**
+5. ~~Calculate similarity in aneuploid profile for each mating pair (Figure 1C)~~ **No difference between distributions of aneuploidy (Kruskal-Wallis: chi-squared = 0.0116099, p-val = 0.91419)**
 
-6. ~~Identify the range of SC5314, 529L, and heterozygote marker position in SC534x529L progeny~~ **( 529L x SC: HET MAX: 99.5%, MIN: 0%, P1 MAX: 100%, MIN: 0%, P2 MAX: 40.4%, MIN: 0%  ) (P60002 x SC: HET MAX: 2.6%, MIN: 0.216%, P1 MAX: 99.8%, MIN: 97.4%, P2 MAX: 0.43%, MIN: 0% )**
+6. ~~Identify the range of SC5314, 529L, and heterozygote marker position in SC534x529L progeny~~ **( 529L x SC: HET MAX: 99.5%, MIN: 0%, P1 MAX: 100%, MIN: 0%, P2 MAX: 40.4%, MIN: 0% ) ( P60002 x SC: HET MAX: 2.6%, MIN: 0.216%, P1 MAX: 99.8%, MIN: 97.4%, P2 MAX: 0.43%, MIN: 0% )**
 
 7. ~~Determine the average percent het and P60002 in the SCxP6 progeny~~ **(529LxSC ddRAD-Seq: "1"-4524, "2"-1521, "n"-23666, total_informative-29711, 79.6% Het; 
 P6xSC ddRAD-Seq: "1"-30821, "2"- 20, "n"-395, total_informative-31236, 1.3% Het)
@@ -39,16 +41,16 @@ P6xSC ddRAD-Seq: "1"-30821, "2"- 20, "n"-395, total_informative-31236, 1.3% Het)
 8. ~~Number of recombination events in each of the two matings (upper and lower bounds)~~ **Max: 102 recombinations, Min: 0 recombinations**
 
 9. ~~Is the distribution of recombination tract lengths a Poisson for either mating?~~ **This one is more complicated than initially thought. It turns out pretty much any unimodal distribution is a Poisson distribution and it's a matter of calculating the lambda coefficient. The smaller the lambda, the more likely that smaller values will be more frequent on the distribution. SCx529L lambda = 0.506, SCxP60002 lambda = 0.506; both of these distributions of recombinant fragment sizes are front-heavy and likely to be smaller, which makes sense. This was calculated by graphing log(fragment size frequency) by log(fragment size) and fitting a linear model. The slope of the linear model is lambda. I had to compress the data down to just 10 bins because log functions don't play well with zeroes, so I'm unsure of the quality of the lambdas that I measured, but it jives with what we've got.**
-    **Redo these calculations with more bins. Should be pretty simple...** 
-    1. ddRAD: SCx529L lambda = 0.506
-    2. ddRAD: SCxP60002 lambda = 0.506
-    3. WGS:   SCx529L lambda = 0.509
+    ~~**Redo these calculations with more bins. Should be pretty simple...**~~ 
+    1. ddRAD: SCx529L lambda = |-0.3186108|
+    2. ddRAD: SCxP60002 lambda = |-0.2918504|
+    3. WGS:   SCx529L lambda = |-0.2599567|
 
-10. PCR and sanger sequencing of Mitochondria for additional evidence of recombination
+10. ~~PCR and sanger sequencing of Mitochondria for additional evidence of recombination~~
     1. ~~Design primers of 3 regions in recombinant mitochondria~~
-    2. PCR regions out
-    3. Submit for sequencing
-    4. Integrate sequences into a supplemental figure
+    2. ~~PCR regions out~~
+    3. ~~Submit for sequencing~~
+    4. ~~Integrate sequences into a supplemental figure~~
 
 11. ~~Ensure compared frequencies of aneuploids is based on fraction/percent of total progeny, not absolute numbers. Need W stat for KW test of equal aneuploid frequency.~~ **Aneuploid frequencies were normalized to progeny count W: 0.0116, P.value: 0.9141**
 
@@ -66,15 +68,15 @@ P6xSC ddRAD-Seq: "1"-30821, "2"- 20, "n"-395, total_informative-31236, 1.3% Het)
 
 18. ~~What is the range of recombination tract lengths in the WGS data?~~ **Max size: 724659bp, Min size: 18bp**
 
-19. Update Figure 1.
+19. ~~Update Figure 1.~~
 
-20. Update Figure 2.
+20. ~~Update Figure 2.~~
 
-21. Update Figure 3.
+21. ~~Update Figure 3.~~
 
-22. Update Figure 4.
+22. ~~Update Figure 4.~~
 
-23. Compile supplemental figures with their main-figure counterparts
+23. ~~Compile supplemental figures with their main-figure counterparts~~
 
 24. ~~Write methods section~~
 
@@ -90,7 +92,12 @@ P6xSC ddRAD-Seq: "1"-30821, "2"- 20, "n"-395, total_informative-31236, 1.3% Het)
 
 30. ~~LOH recombination figure and pipeline~~ **Done!** 
 
-31. Rewrite elements of the paper to include this data. 
+31. ~~Rewrite elements of the paper to include this data.~~
 
-32. Graph in Figure 4 is missing data; fix this in the `phenotypes_graph_maker.R` program
+32. ~~Graph in Figure 4 is missing data; fix this in the `phenotypes_graph_maker.R` program~~ Not sure what's causing this warning, but all data is in the figure. 
 
+33. ~~Region 1 Mitochondrial PCR in preparation for sequencing~~
+
+34. ~~Make a strain list; characterizing all the strains used in the paper. Should include MAY#, cross, %SC5314, %529L, %Het, number of recombinations~~
+
+35. ~~Make an oligo list; characterizing all the strains used in the paper (the mitochondria amplifying and sequencing primers).~~
