@@ -40,7 +40,7 @@ def univ_pos( chr_lengths ):
 
 
 def centimomos( dir_path, file_name, chr_file_name = "calbicans_chromosomes.csv", 
-				max_dist = 100, start_dist = 1, increment = 1, total_tests = 10000 ):
+				max_dist = 10000, start_dist = 700, increment = 100, total_tests = 10000 ):
 
 	"""Brute forcing centimorgan's calculation."""
 
@@ -64,10 +64,11 @@ def centimomos( dir_path, file_name, chr_file_name = "calbicans_chromosomes.csv"
 		chr_labs[line_list[0]] = line_list[4].strip()
 
 	recom_file = open( dir_path + file_name, "r" )
-	
 
 	empty_list = []
 	unique_progeny = set()
+	chromosome_set = set()
+	
 	header = 1 
 	for recom in recom_file: 
 		if header: 
@@ -82,13 +83,31 @@ def centimomos( dir_path, file_name, chr_file_name = "calbicans_chromosomes.csv"
 		break_dist   = int(recom_list[3]) # Distance to the next detectable break (distance from break to next break FURTHER AWAY FROM CENTROMERE)
 
 		unique_progeny.add(progeny_name) # Number of unique progeny for normalizing recombination probability over these events
+		chromosome_set.add(chromosome)
 
 		srtble_recom = [ progeny_name, chromosome, break_pos, break_dist ]
 		empty_list.append( srtble_recom )
 
+	chromosome_list = list(chromosome_set)
+
 	sorted_list = sorted( empty_list, key = operator.itemgetter(1,2))
 
-	coin_flip_list = list(range(1,101))
+	
+	recom_chr_dict = {}
+	for recoms in sorted_list: 
+
+		progeny_name = recoms[0]
+		chromosome   = recoms[1]
+		break_pos    = recoms[2] # Position of a detected break
+		break_dist   = recoms[3]
+
+		new_event = [progeny_name, break_pos, break_dist]
+		
+		if chromosome in recom_chr_dict: 
+			recom_chr_dict[chromosome].append( new_event )
+		else: 
+			recom_chr_dict[chromosome] = []
+
 	probability_dict = {}
 
 	print("\nProgress: ")
@@ -105,92 +124,25 @@ def centimomos( dir_path, file_name, chr_file_name = "calbicans_chromosomes.csv"
 		test_number = 1
 		while test_number <= total_tests: 
 
-			coin_flip = random.choice( coin_flip_list )
-			if coin_flip >= 51: 
-				towards_centromere = 1
-			else: 
-				towards_centromere = 0
+			# Do all the shit in here. 
+			rando_chr = random.sample(chromosome_list, 1)[0]
+			rando_start = random.randint(1,chr_lengths[rando_chr])
+			rando_end = rando_start + distance
 
-			# Find where this is relative to centromere
-			rando_event = random.choice( sorted_list )
-			index = sorted_list.index(rando_event)
+			if rando_end > chr_lengths[rando_chr]:
+				rando_start = chr_lengths[rando_chr] - distance 
+				rando_end = chr_lengths[rando_chr]
 
-			progeny_name = rando_event[0]
-			chromosome   = rando_event[1]
-			break_pos    = rando_event[2] 
-			break_dist   = rando_event[3]
-
-			if break_pos >= centromere_locations[ chromosome ][1]: 
+			for recoms in recom_chr_dict[ rando_chr ]: 
+				break_pos = recoms[1]
 				
-				arm = "right"
+				if (rando_start <= break_pos) and (rando_end >= break_pos): 
+					successful_forays += 1
+					break
 
-				if towards_centromere: 
-				
-					try: 
-						previous_event = sorted_list[index-1]
+			test_number += 1
 
-						# Check to see if it crosses the centromere. 
-						if (break_pos - distance) < centromere_locations[chromosome][1]: 
-							continue
-
-						if chromosome != previous_event[1]: 
-							continue
-
-						# Check to see if there is a successfully found recombination
-						success_bool = abs(break_pos-previous_event[2]) <= distance
-						if success_bool: 
-							successful_forays += 1
-						test_number += 1
-
-					except IndexError: 
-						pass # There is no recombination found; this is the end of the chromosome No increment of test_number
-				
-
-				else: 
-					if break_dist > distance: 
-						test_number += 1 # Nothing happens, no recom was found with this trial
-						
-					else: 
-						successful_forays += 1
-						test_number += 1
-
-
-			elif break_pos <= centromere_locations[ chromosome ][0]: 
-				
-				arm = "left"
-
-				if not towards_centromere: # This was backwards and doesn't work without the "not"... sorry!
-					if break_dist > distance: 
-						test_number += 1 # Nothing happens, no recom was found with this trial
-						
-					else: 
-						successful_forays += 1
-						test_number += 1
-				else:
-					try: 
-						previous_event = sorted_list[index+1]
-
-						# Check to see if it crosses the centromere. 
-						if (break_pos + distance) > centromere_locations[chromosome][0]: 
-							continue
-
-						if chromosome != previous_event[1]: 
-							continue
-
-						# Check to see if there is a successfully found recombination
-						success_bool = abs(break_pos-previous_event[2]) <= distance
-						if success_bool: 
-							successful_forays += 1
-						test_number += 1
-
-					except IndexError: 
-						pass # There is no recombination found; this is the end of the chromosome No increment of test_number
-
-			else: 
-				arm = "centromere"
-				# print(rando	
-
-		probability_dict[distance] = (round((successful_forays/(test_number*len(unique_progeny))),5))		
+		probability_dict[distance] = round((successful_forays/(total_tests*len(unique_progeny))),5)
 
 		distance += increment
 
