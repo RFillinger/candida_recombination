@@ -764,7 +764,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 			for index in range(0,len(marker_list)):
 
 				# Boolean checking for the last marker on the chromosome arm; used for special cases
-				last_one = (index + 1)  == len(marker_list)
+				last_one = (index + 1) == len(marker_list)
 
 				# Make a variable for the marker; if this changes from stor_mkr, a recombination has occurred
 				marker = marker_list[ index ]
@@ -787,7 +787,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 				recom_frag_dict[ "positions" ].append( posit_list[index] )
 				recom_frag_dict[ "markers" ].append( marker )
 
-				if last_one: # If it's the last item in the list; this is a special case. Regular recombiantions are below
+				if last_one: # If it's the last item in the list; this is a special case. Regular recombinations are below
 					
 					if first_recom: # The first change in the marker happens at the last possible position; chromosome only changed once at the very end
 						if recom_bool:

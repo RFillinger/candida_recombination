@@ -1,25 +1,13 @@
 
 # Upcoming changes:
 
-## Bugs: 
-
-* Incorrect recombination normalization in recom_*.csv files; events are not being tallied in recom.by.col column. 
+## Bugs:  
 
 ## Lab meeting: 
-
-* Make figures showing color-coded recombination for LTD progeny chromosomes of 2 of them. One with the most 529L genotypes and another with a lot of 529L genotypes. 
-
-* Can we separate the influence of previous LOH on recombination? Approach: separate markers that are AA/BB (Parent 1 v. 2) v. AB/CD (Parent 1 v. 2). Is there more recombination events associated with one group versus the other based on their frequency?
-
-* Quantify transition from aa<->bb v. aa<->n/bb<->n
-
 
 ## Linear modelling and statistics: 
 
 * Find markers with extreme biases towards one parent or another.
-
-* Multi-modality tests on high-recombinant progeny vs. low-recombinant progeny: [multi-modal distributions](https://en.wikipedia.org/wiki/Multimodal_distribution), look under "General tests" for more information on where to start. 
-
 
 ## Before publication: 
 
@@ -32,6 +20,14 @@
 ---
 
 # Completed changes: 
+
+### 5/9/22
+
+* Cleaning git repository. 
+
+### 2/17/22
+
+* Multi-modality tests on high-recombinant progeny vs. low-recombinant progeny: [multi-modal distributions](https://en.wikipedia.org/wiki/Multimodal_distribution), look under "General tests" for more information on where to start. 
 
 ### 1/5/22
 

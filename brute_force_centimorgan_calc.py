@@ -40,7 +40,7 @@ def univ_pos( chr_lengths ):
 
 
 def centimomos( dir_path, file_name, chr_file_name = "calbicans_chromosomes.csv", 
-				max_dist = 10000, start_dist = 700, increment = 100, total_tests = 10000 ):
+				max_dist = 850, start_dist = 750, increment = 1, total_tests = 100000 ):
 
 	"""Brute forcing centimorgan's calculation."""
 
