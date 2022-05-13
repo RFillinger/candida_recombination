@@ -452,7 +452,7 @@ shared_geno_graphs <- function( path_and_file, chr_labs, chr_lengths, univ_pos, 
 }
 
 
-track_lengths <- function ( path_and_file, chr_labs, chr_lengths, univ_pos, bwidth = 0.1, ymaximum = 500, xmaximum = 750, theme_color = "black" ){
+track_lengths <- function( path_and_file, chr_labs, chr_lengths, univ_pos, bwidth = 0.1, ymaximum = 500, xmaximum = 750, theme_color = "black" ){
 
 	path = path_components( path_and_file )[1]
 	file = path_components( path_and_file )[2]
