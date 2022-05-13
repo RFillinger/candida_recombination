@@ -14,7 +14,7 @@ We used [Ymap](http://lovelace.cs.umn.edu/Ymap/) for ploidy analysis.
 ###### ddRAD-Seq demultiplexing and alignment
 Sequencing libraries were prepared using [ddRad-Seq](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037135) methods and sequenced with Illumina MiSeq using 50bp single-end sequencing
 
-A tool called `barcode_splitter` is employed for out single-end reads: 
+A tool called `barcode_splitter` (found [here](https://pypi.org/project/barcode-splitter/))is employed for out single-end reads: 
  > barcode_splitter --bcfile barcode_file.txt lotsa_samples.fastq --idxread 1
  * `barcode_file.txt` is a tab-separated file containing the sample names and respective barcodes
 
@@ -118,10 +118,21 @@ To use `allele_switch_finder.py`, use the following command:
 
 
 #### Recombination analysis with marker data
-Run randomized test data in `recombination_analyzer.py`
 
-Test this program by using the following command: 
-> python3 recombination_analyzer.py test
+Run this program by using the following command: 
+> python3 recombination_analyzer.py SCx529L/529LxSC_4way.csv
+>> Removed  1890  markers ( 73.6 % )
+>> Removed using remove_markers.csv: 4
+>> Markers replaced or removed using strange_markers.csv:  8475
+>> Total progeny:  75
+>> Total recombinations:  2625
+
+> python3 recombination_analyzer.py SCxP60002/P60002xSC_4way.csv
+>> Removed  1725  markers ( 70.0 % )
+>> Removed using remove_markers.csv: 0
+>> Markers replaced or removed using strange_markers.csv:  5380
+>> Total progeny:  70
+>> Total recombinations:  274
 
 
 #### Recombination and SNP analysis less-than-diploid progeny WGS data: 
@@ -135,10 +146,13 @@ Start this pipeline by running:
 
 Then run it through the pipeline: 
 > python3 recombination_analyzer.py LTD_Progeny_Markers/ltd_529L_4way.csv
->> marker_cleaner removed  82094  markers ( 81.3931485788623% removed ) 
->> Total progeny:  6
->> Total recombinations:  3043
->> Number of putative break-induced replications:  94
+>> Removed  82816  markers ( 81.6 % )
+>> Removed using remove_markers.csv: 174
+>> Markers replaced or removed using strange_markers.csv:  211
+>> Total progeny:  5
+>> Total recombinations:  2287
+
+
 
 
 
