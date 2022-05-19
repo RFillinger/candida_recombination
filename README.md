@@ -119,9 +119,21 @@ To use `allele_switch_finder.py`, use the following command:
 
 #### Required input files for recombination analysis with `recombination_analyzer.py`
 
-`calbicans_chromosomes.csv`: 
+`calbicans_chromosomes.csv`: A file containing chromosomal information on the name of the chromosome, length of the chromosome, the start and end of the centromere and a shortened name, or alias of the chromosome.  
 
-`progeny_ploidy_blacklist.csv`: 
+|Chromosome Name|Chromosome Length|Centromere Start|Centromere End|Alias| 
+|:--------:|:--------:|:--------:|:--------:|:--------:|
+|Ca21chr1_C_albicans_SC5314|3190000|1563038|1|
+|Ca21chr2_C_albicans_SC5314|2230000|1927255|2|
+|Ca21chr3_C_albicans_SC5314|1800000|826481|3|
+|Ca21chr4_C_albicans_SC5314|1600000|996216|4|
+|Ca21chr5_C_albicans_SC5314|1190000|471745|5|
+|Ca21chr6_C_albicans_SC5314|1030000|983792|6|
+|Ca21chr7_C_albicans_SC5314|950000|428712|7|
+|Ca21chrR_C_albicans_SC5314|2290000|1747664|R|
+
+
+`progeny_ploidy_blacklist.csv`: File with two columns containing progeny name and any chromosomes that need to be removed due to aneuploidy or other reasons. If the second column is left blank, all markers from that progeny will be removed! Multiple chromosomes can be removed if entered into the second column and separated by commas.
 
 
 #### Recombination analysis with marker data
