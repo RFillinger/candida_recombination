@@ -37,10 +37,6 @@ Alignments were performed using [bowtie2](https://doi.org/10.1093/bioinformatics
 
 Manual for v1 STACKS: [STACKS V1](https://catchenlab.life.illinois.edu/stacks/manual-v1/) (Data as of 6/7/21 has been analyzed and prepared using this version)
 
-##### Processing Stacks Genotype Output
-
-**STACKS**: 
-
 ###### pstacks: 
 To generate markers for each individual progeny, use `pstacks_automator_9.py`  
 > python3 pstacks_automator_9.py ../alignments/filamentation/pstacks_input.txt ../alignments/filamentation/ filamentation/
@@ -64,7 +60,9 @@ Replacing this 1 with a 2 will
 > python3 sstacks_automator_11.py ../alignments/filamentation/pstacks_input.txt filamentation/ filamentation/ 1
 > python3 sstacks_automator_11.py ../alignments/fluconazole/pstacks_input.txt fluconazole/ fluconazole/ 1
 
-Genotypes command used in **Gort**:
+###### Genotypes: 
+
+Genotypes command used to obtain files: 
 
 `genotypes -b 1 -P ./genotype_input_files/ -c -t GEN --min_hom_seqs 10 --min_het_seqs 0.4 --max_het_seqs 0.05`
 
@@ -94,7 +92,7 @@ To transpose the data, open the file with Microsoft Excel, copy all the data ont
 
 Once the `.catalog.tags.tsv` and `.genotypes.tsv` files have been transposed, save both of them as a `.csv` instead of a `.tsv` file to in order to use them in the `allele_switch_finder.py` program. 
 
-##### Combining files for recombination analysis
+##### Preparing STACKS files for recombination analysis
 
 `allele_switch_finder.py` is a python program that combines the `.catalog.tags.csv` and `.genotypes.csv` files together to get them ready for **r/qtl**.
 
@@ -119,7 +117,7 @@ To use `allele_switch_finder.py`, use the following command:
 
 #### Required input files for recombination analysis with `recombination_analyzer.py`
 
-`calbicans_chromosomes.csv`: A file containing chromosomal information on the name of the chromosome, length of the chromosome, the start and end of the centromere and a shortened name, or alias of the chromosome.  
+`calbicans_chromosomes.csv`: A file containing chromosomal information on the name of the chromosome (as it appears in the marker file, probably what it is in the organism's `.fasta` assembly), length of the chromosome (this doesn't have to be perfect, if anything, slightly larger is better than slightly too short), the start and end of the centromere (this allows us to split the markers into arms of each chromosome) and a shortened name, or alias of the chromosome (used for labelling some graphs so the names don't run over eachother).  
 
 |Chromosome Name|Chromosome Length|Centromere Start|Centromere End|Alias| 
 |:--------:|:--------:|:--------:|:--------:|:--------:|
