@@ -3,7 +3,7 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - r-base=4.2
+  - r-base=4.0
   - r-ggplot2
   - r-stringr
   - r-ggpubr
