@@ -10,7 +10,6 @@ dependencies:
   - r-diptest
   - r-gridextra
   - python=3.7
-  - pip
   - pip:
     - statistics
     - operator
