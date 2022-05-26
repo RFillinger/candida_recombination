@@ -1,5 +1,21 @@
 channels:
   - defaults
+  - bioconda
+  - conda-forge
 dependencies:
-  - r-base=3.5
-  - python=3.7
+  - r-base=3.6
+  - r-ggplot2
+  - r-stringr
+  - r-ggpubr
+  - r-diptest
+  - r-gridextra
+  - python=3.7.3
+  - pip
+  - pip:
+    - statistics
+    - operator
+    - random
+    - numpy
+    - copy
+    - sys
+    - os
