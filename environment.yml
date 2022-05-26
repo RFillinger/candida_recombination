@@ -3,10 +3,10 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - r-base=3.5.3
+  - r-base=3.5
   - r-ggplot2
   - r-stringr
   - r-ggpubr
   - r-diptest
   - r-gridextra
-  - python=3.7.3
+  - python=3.7
