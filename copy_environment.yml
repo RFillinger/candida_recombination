@@ -1,5 +1,5 @@
 channels:
   - defaults
 dependencies:
-  - r-base=3.5.3
-  - python=3.7.3
+  - r-base=3.5
+  - python=3.7
