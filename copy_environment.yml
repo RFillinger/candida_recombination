@@ -1,0 +1,7 @@
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - r-base=3.5.3
+  - python=3.7.3
