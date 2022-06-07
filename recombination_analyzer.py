@@ -430,7 +430,8 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	blk_list_array = csv_reader( blklist_file )
 	blklist_file.close()
 	
-	# Move the data from the black list file and relabel them into a dictionary
+	# Move the data from the black list file and relabel them into a dictionary; progeny names associated with chromosomes to be removed
+	# Remember that names included with no chromosomes are completely removed. 
 	ploid_dict = {}
 
 	for progeny in blk_list_array: 
@@ -450,7 +451,6 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 					# ploid_dict[ name ].append( abbrev_name ) # Add the abbreviated name if you so choose
 				elif (character == long_name): 
 					ploid_dict[ name ].append( long_name )
-
 
 	# In the f2 file, find indexes of markers for each chromosome (or marker numbers, though indexes will be more flexible to other pieces of data)
 	chromosomes = f2_geno_array[0]
@@ -472,7 +472,8 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 		else: 
 			chr_index_dict[ chr_strings ].append( index )
 
-	# Combine the dictionaries to remove the chromosomes more easily
+	# Convert ploid_dict into marker-specific indices that need to be removed
+	# Marker lists are frequently double-stacked which isn't a big deal, but dealing with massive data sets might be an issue. 
 	remove_dict = {}
 	for prog_name, chr_removal_list in ploid_dict.items():
 		for chromosome in chr_removal_list:
@@ -494,16 +495,18 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	deploid_dict[ parent_1[0] ] = parent_1[1:]
 	deploid_dict[ parent_2[0] ] = parent_2[1:]
 
+	completely_removed_due_to_weird_karyotype = 0
+	prog_with_aneuploid_chromosome = 0
 	# For each progeny, either remove it or remove the markers from the aneuploid chromosomes.
 	for single_strain in strains:  
 		prog_name = single_strain[0]
 		
 		if prog_name in ploid_dict: 
 			if ploid_dict[ prog_name ] != []:
+				prog_with_aneuploid_chromosome += 1
 				deploid_dict[ prog_name ] = [] 
-				for index, marker in enumerate(
-					single_strain): 
-					if index == 0: 
+				for index, marker in enumerate(single_strain): 
+					if index == 0: # index 0 is the prog_name, so we can skip it
 						continue
 					if index in remove_dict[ prog_name ]: 
 						# Add missing marker to deploid_dict[ prog_name ] if the marker is to be excluded
@@ -511,6 +514,7 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 					else:
 						deploid_dict[ prog_name ].append( str(marker) )
 			else: 
+				completely_removed_due_to_weird_karyotype += 1
 				continue # Remove the progeny. Continue is not necessary, but if anybody wants to add something new, this is the place. 
 		else: 
 			deploid_dict[ prog_name ] = single_strain[1:]
@@ -520,13 +524,17 @@ def deploidy( dir_path, f2_file_name, ploid_f2_file_name, chr_labs, blacklist_fi
 	ploid_f2_file.close()
 
 	number_o_prog = len( deploid_dict )-5 
+	
+	number_list = [ number_o_prog, prog_with_aneuploid_chromosome, completely_removed_due_to_weird_karyotype ]
 
-	return deploid_dict, number_o_prog
+	return deploid_dict, number_list 
 
 
 def replace_mkrs( dir_path, ploid_f2_file_name, out_file_name, chr_labs, blacklist_file_name = "", \
 				empty_mrk = "-", rplc_strange_bool = 1, replace_strange = "-", strange = "x" ):
 	
+	""" For the manual removal of markers. """
+
 	# Load in the genotyping data 
 	f2_geno_file = open( dir_path + ploid_f2_file_name, "r" )
 	trp_f2_geno_array = transpose(csv_reader( f2_geno_file ))
@@ -570,13 +578,15 @@ def replace_mkrs( dir_path, ploid_f2_file_name, out_file_name, chr_labs, blackli
 				rplc_mkr_list = rplc_mkrs_dict[ cat_nums ][3:]
 				for index in range(0,len( rplc_mkr_list )):
 					new_marker = rplc_mkr_list[index]
-					if rplc_mkr_list[index].strip() != "":
+					if (rplc_mkr_list[index].strip() != ""): 
+					
 						if (rplc_mkr_list[index].strip() == strange) and rplc_strange_bool: 
 							f2_dat_dict[ cat_nums ][index + 5] = replace_strange
 						else:
 							f2_dat_dict[ cat_nums ][index + 5] = rplc_mkr_list[index]
-								
-						count += 1
+						
+						if (rplc_mkr_list[index].strip() != f2_dat_dict[ cat_nums ][index + 5]): 
+							count += 1
 
 		new_marker_array = []
 		for cat_num, marker in f2_dat_dict.items():
@@ -890,7 +900,7 @@ def recombination_analysis( dir_path, f2_file_name, output_file_name, count_file
 
 		print( prog_name + "," + str(prog_recom_count), file = count_file)
 	
-	print( "Total progeny: ", total_progeny )
+	# print( "Total progeny: ", total_progeny )
 	print( "Total recombinations: ", recom_count )
 	# print( "Number of putative break-induced replications: ", bir )
 
@@ -1463,7 +1473,7 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	fwrc_filename = "strangers_" + file_name
 	loh_reco_filename = "loh_deploided_" + file_name
 	loh_reco_cnt_filename = dir_path + "loh_events_" + file_name
-	fourway_deploid_dict, number_o_prog = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
+	fourway_deploid_dict, number_list = deploidy( dir_path, fwrc_filename, loh_reco_filename, chr_labs, blacklist_file_name )
 	loh_reco( dir_path, loh_reco_filename, loh_reco_cnt_filename, centromere_locations, chr_lengths )
 	
 	f2_loh_file_name = dir_path + "f2_loh_events_" + file_name
@@ -1473,7 +1483,10 @@ def main(create_tester = 0, chr_file_name = "calbicans_chromosomes.csv"):
 	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + loh_reco_event_file_name + " loh" )
 
 	# This one is the normal stuff. 
-	deploid_dict, number_o_progeny = deploidy( dir_path, f2_file_name, recleaned_f2_file_name, chr_labs, blacklist_file_name )
+	deploid_dict, number_list = deploidy( dir_path, f2_file_name, recleaned_f2_file_name, chr_labs, blacklist_file_name )
+	print( "Progeny with aneuploid chromosomes: ", number_list[1])
+	print( "Progeny removed due to karyotype: ", number_list[2])
+	print( "Total remaining progeny: ", number_list[0])
 	replace_mkrs( dir_path, recleaned_f2_file_name, recleaned_f2_file_name, chr_labs ) ############### Important one. 
 	stack_bar_file_name = dir_path + "stackbar_" + file_name 
 	marker_tally_ho( deploid_dict, stack_bar_file_name )

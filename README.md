@@ -1,9 +1,5 @@
 # Recombination analysis
 
-This data is accessible through a jupyter notebook: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/RFillinger/candida_recombination/master)
-
-Copy markdown link to clipboard 
-
 **ddRAD-Seq is a cheap, high-depth sequencing technique that generates genotyping data across the whole genome. The goal of this project is to quantify and map recombination events using ddRAD-Seq data, or any genomic data of progeny from two parents that can be characterized with markers** 
 
 #### Ploidy analysis an filtration

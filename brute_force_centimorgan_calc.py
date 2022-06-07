@@ -141,9 +141,10 @@ def centimomos( dir_path, file_name, chr_file_name = "calbicans_chromosomes.csv"
 					break
 
 			test_number += 1
-
+		
+		# If you're using haploid genome length, cM length (and the genome of interest is usually diploid) estimation needs to be doubled to account for that
 		probability_dict[distance] = round((successful_forays/(total_tests*len(unique_progeny))),5)
-
+		
 		distance += increment
 
 	print( "Done!\n")
