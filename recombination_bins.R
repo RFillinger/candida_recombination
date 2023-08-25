@@ -184,8 +184,8 @@ recom_graphs <- function( path_and_file, chr_labs, chr_lengths, universal_positi
 		geom_col( color = "cyan" ) + 
 		theme(  axis.title.y = element_blank(),
 				axis.title.x = element_blank(),
-				axis.text.x = element_text(angle = 45, vjust = 0.5)) + 
-		lims(y = c(0,0.06))
+				axis.text.x = element_text(angle = 45, vjust = 0.5)) # + 
+		# lims(y = c(0,0.06))
 	ggsave( paste0(path, substr( file, 1, str_length(file)-4 ), "_NORMALIZED_RECOMS", file_extension), width=7, height=7 )
 
 
@@ -463,8 +463,8 @@ track_lengths <- function( path_and_file, chr_labs, chr_lengths, univ_pos, bwidt
 	g <- ggplot( data = df, aes( x = `Recombination.Event.Length..bp.`/1000)) + # kilo base pairs
 	geom_histogram( binwidth = bwidth, color = "black", fill = "white") +
 	labs( x = paste0("Estimated Recombination Size (Kbp) Binsize: ", bwidth), y = "Frequency") +
-	ylim( c(0,ymaximum)) +
-	xlim( c(0,xmaximum)) + 
+	# ylim( c(0,ymaximum)) +
+	# xlim( c(0,xmaximum)) + 
 
 	theme_bw() + 
 	theme( 
@@ -481,8 +481,8 @@ track_lengths <- function( path_and_file, chr_labs, chr_lengths, univ_pos, bwidt
 			)
 
 	# Loop for the delineations
-	# x_spots = c(0,500,1000,1500,2000)
-	x_spots = c(0,250,500,750)
+	x_spots = c(0,500,1000,1500,2000)
+	# x_spots = c(0,50,100)
 
 	for ( tickmarks in x_spots ){
 		g <- g + 
@@ -511,7 +511,6 @@ recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, the
 	labs( x = "", y = "Recombination Frequency" ) + 
 	theme_bw() + 
 	ylim( c(0,ymaximum)) +
-	xlim(c(0,105)) + 
 	# xlim( c(0,100)) + 
 	theme( 
 		 	panel.grid.major.x = element_blank(), 
@@ -527,8 +526,8 @@ recom_histo <- function( rhf_filename, path_and_file, bwidth, ymaximum = 35, the
 			)
 
 	# Loop for the delineations
-	x_spots = c(5,25,50,75,100)
-	# x_spots = c(0,100,200,300,400,500,600)
+	# x_spots = c(5,25,50,75,100)
+	x_spots = c(0,100,200,300,400,500,600)
 	for ( tickmarks in x_spots ){
 		x <- x + geom_segment( x = tickmarks, y = 0, xend = tickmarks, yend = -0.015* ymaximum, color = theme_color) +
 				annotation_custom( textGrob(as.character(tickmarks), gp = gpar( fontsize = 17, col = theme_color )), # Adds the chromosome labels

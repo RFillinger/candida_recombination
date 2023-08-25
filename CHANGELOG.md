@@ -1,21 +1,9 @@
 
 # Upcoming changes:
 
-## Bugs:  
+ 
 
-## Lab meeting: 
 
-## Linear modelling and statistics: 
-
-* Find markers with extreme biases towards one parent or another.
-
-## Before publication: 
-
-* Rewrite the environment file `recombination_analyzer.yml` 
-	* there have been multiple additions to the code's imported libraries and the `.yml` file needs to be rewritten by `conda`. 
-
-* Make a Jupyter notebook for the `.git` repository. 
-	* **This repository needs to be made public before it can be made accessible to Binder.**
 
 ---
 
