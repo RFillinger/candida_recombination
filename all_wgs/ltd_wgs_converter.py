@@ -60,10 +60,14 @@ def parse_path( path_n_name, sep = "/" ):
 	return dir_path, file_name
 
 
-def snp2mkr( SNP, cat_ID ):
+def snp2mkr( SNP, cat_ID, par1_col_idx = 9, par2_col_idx = 10 ):
 
 	chromosome = SNP[0]
-	
+	reference  = SNP[3]
+
+	par1_idx = par1_col_idx - 9
+	par2_idx = par2_col_idx - 9 # Subtract the information column indices from the original index values to get SNP colunmn indices
+
 	try: 
 		chr_pos = SNP[1]
 	except IndexError: 
@@ -82,9 +86,8 @@ def snp2mkr( SNP, cat_ID ):
 		elif "|" in genos: 
 			genotype_list = genos.split("|")
 
-		empty_set.add(genotype_list[0])
+		empty_set.add(genotype_list[0]) # This set is registering how many alleles there are in the set
 		empty_set.add(genotype_list[1])
-
 
 	if len(empty_set) > 4:
 		# print(SNP) 
@@ -93,10 +96,19 @@ def snp2mkr( SNP, cat_ID ):
 		# print( "This pipeline can't really deal with that... so it's quitting. ")
 		return ""
 
-	marker_dict = {}
-	for idx, elements in enumerate(empty_set):
-		marker_dict[ elements ] = geno_list[idx]	
+	# if ("." in empty_set) and (len(empty_set) > 2):
 
+	# 	print(SNP)
+
+	marker_dict = {} # Connect basepair to genotype
+	for idx, elements in enumerate(empty_set):
+
+		if elements != ".":
+			marker_dict[ elements ] = geno_list[idx]	
+		
+		else: 
+			marker_dict[ reference ] = geno_list[idx]
+	
 	new_mkr_list = []
 	for mkrs in SNP:
 
@@ -132,12 +144,17 @@ def main():
 	path_and_name = arg_list[1] 
 	dir_path, file_name = parse_path( path_and_name )
 		
-	data_file = open( file_name, "r" )
+	data_file = open( path_and_name, "r" )
 	data_list = file_reader( data_file, sep = "\t" )
 
 	cross = []
+
+	#Parental indexes MUST BE ACCURATE! START AT 0!
 	par1_col_idx = 28
 	par2_col_idx = 23
+
+	# par1_col_idx = 14
+	# par2_col_idx = 15
 
 	header = 1
 	for index, snps in enumerate(data_list): 
@@ -145,6 +162,7 @@ def main():
 		try: 
 			chromosome        = snps[0]
 			chr_pos           = snps[1]
+			ref               = snps[3]
 			cat_ID = str(index)
 
 		except IndexError: 
@@ -174,7 +192,10 @@ def main():
 
 		new_mkr = []
 
-		marker = snp2mkr(SCx529L, cat_ID)
+		if "*" in "\t".join(SCx529L): # Removes heterozygous INDELS
+			marker = ""
+		else: 
+			marker = snp2mkr(SCx529L, cat_ID, par1_col_idx, par2_col_idx)
 		
 		if marker == "": # returned nothing due to error: 
 			continue
@@ -185,7 +206,7 @@ def main():
 
 		cross.append( new_529L_mkr )
 
-	new_5_file = open( "all_prog_WGS.csv", "w" )
+	new_5_file = open( dir_path + "all_prog_WGS.csv", "w" )
 	csv_printer( transpose(cross), new_5_file )
 
 
