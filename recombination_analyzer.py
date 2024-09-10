@@ -231,8 +231,8 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 	four_way_file_name = dir_path + file_name
 
 	untrp_leels = csv_reader( four_way_file_name ) # Load the file, but it needs to be transposed
-	leels = transpose( untrp_leels )
-
+	# leels = transpose( untrp_leels )
+	leels = untrp_leels
 	
 	try: 
 		if blacklisted:
@@ -281,12 +281,18 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 
 	header = 1
 	for lines in leels: 
+
 		if header: 
 			keepers.append( lines )
 			chuckers.append( lines )
 			strangers.append( lines )
 			header = 0
 			continue
+			# if lines[0] in ["Chromosome", "Chr_Position", "# Catalog ID"]:
+			# 	continue
+			# else:
+			# 	header = 0
+			# 	continue
 
 		parent1 = lines[3]
 		parent2 = lines[4]
@@ -324,6 +330,15 @@ def marker_cleaner(dir_path, file_name, blacklist_file_name = "remove_markers.cs
 		unique_alleles.add(parent1[1])
 		unique_alleles.add(parent2[0])
 		unique_alleles.add(parent2[1])
+
+		# try:
+		# 	unique_alleles.add(parent1[0])
+		# 	unique_alleles.add(parent1[1])
+		# 	unique_alleles.add(parent2[0])
+		# 	unique_alleles.add(parent2[1])
+		# except IndexError:
+		# 	print(lines[0:20])
+		# 	quit()
 
 		parental_leel_count = len( unique_alleles )
 
@@ -566,7 +581,9 @@ def replace_mkrs( dir_path, ploid_f2_file_name, strange_mkr_file, out_file_name,
 	f2_geno_file.close()
 
 	# Load in the manually-curated strange marker file for replacing markers
-	strange_mkr_list = transpose(csv_reader( strange_mkr_file ))
+	# strange_mkr_list = transpose(csv_reader( strange_mkr_file ))
+	strange_mkr_list = csv_reader(strange_mkr_list)
+
 
 	# Convert genotyping data into a dictionary, stored as keys
 	f2_dat_dict = {}
@@ -1480,8 +1497,14 @@ def main( create_tester = 0, chr_file_name = "calbicans_chromosomes.csv", rplc_m
 	try: 
 		# chr_file = open( dir_path + chr_file_name, "r" ) # Chromosome files in subfolders; you may need to change chr_file_name argument to use the file you want
 		chr_file = open( dir_path + chr_file_name, "r" )
+
 	except IOError: 
-		print( "Couldn't find the chromosomes file:\n " + chr_file_name + ". \nQuitting..." )
+
+		try: 
+			chr_file = open( chr_file_name, "r" )
+
+		except IOError:
+			print( "Couldn't find the chromosomes file:\n " + chr_file_name + ". \nQuitting..." )
 
 	centromere_locations = {}
 	chr_lengths = {}
@@ -1529,7 +1552,7 @@ def main( create_tester = 0, chr_file_name = "calbicans_chromosomes.csv", rplc_m
 	loh_reco_event_file_name = dir_path + "STACKAROONEY_" + file_name
 	loh_reco_cnt_file_name = dir_path + "LOH_recom-count_" + file_name 
 	loh_reco_f2_converter_mapper( dir_path, loh_reco_cnt_filename, f2_loh_file_name, loh_reco_event_file_name, loh_reco_cnt_file_name, centromere_locations, chr_lengths )
-	os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + loh_reco_event_file_name + " loh" )
+	# os.system( "Rscript recombination_bins.R " + dir_path + chr_file_name + " " + loh_reco_event_file_name + " loh" )
 
 	# This one is the normal stuff. 
 	deploid_dict, number_list = deploidy( dir_path, f2_file_name, recleaned_f2_file_name, chr_labs, blacklist_file_name )
@@ -1568,5 +1591,6 @@ def main( create_tester = 0, chr_file_name = "calbicans_chromosomes.csv", rplc_m
 	second_centro_data = dir_path + "CENTO_two_" + file_name
 	centro_func_two( recom_dict, chr_lengths, centromere_locations, second_centro_data )
 
+	print("Files printed to ", dir_path)
 
 main(  )

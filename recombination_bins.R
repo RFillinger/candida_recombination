@@ -15,6 +15,8 @@ path_components <- function( path_and_file ){
 	path_components = file_path_vector[1:length(file_path_vector)-1] 
 	path_string = paste0( path_components, "/" , collapse = "/" )
 
+	## QUICK DISgusting FIX: 
+	path_string = "./"
 	file_stuff <- c( path_string, filename )
 
 	return( file_stuff )
@@ -619,6 +621,9 @@ loh_reco <- function( path_and_file, chr_labs, chr_lengths, universal_positions,
 						xmin = x_spot , xmax = x_spot, ymin = -tick_perct * ymax, ymax = -tick_perct * ymax )
 		i = i + 1
 	}
+
+	print(paste0("Path and file: ", path_and_file))
+	print(paste0("Path: ", path))
 
 	ggsave( paste0(path, "LOH_", substr( file, 1, str_length(file)-4 ), file_extension), width=7, height=7 )
 

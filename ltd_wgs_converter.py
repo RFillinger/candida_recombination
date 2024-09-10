@@ -32,16 +32,21 @@ def transpose(l1):
 	return new_list
 
 
-def csv_printer( csv_list, output_file ):
+def csv_printer( csv_list, output_file, sep = ",", include_keys = 0 ):
 
 	if isinstance(csv_list, list): 
 		for items in csv_list: 
-			line = ",".join(items)
+			line = sep.join(items)
 			print( line, file = output_file)
 	elif isinstance(csv_list, dict):
-		for keys, values in csv_list.items(): 
-			line = ",".join([keys]+values)
-			print( line, file = output_file)
+		if include_keys:
+			for keys, values in csv_list.items(): 
+				line = sep.join([keys]+values)
+				print( line, file = output_file)
+		else: 
+			for keys, values in csv_list.items(): 
+				line = sep.join(values)
+				print( line, file = output_file)
 	else: 
 		print( "csv_printer error: This object is not a list or a dictionary" )
 		quit()
@@ -59,36 +64,43 @@ def parse_path( path_n_name, sep = "/" ):
 	return dir_path, file_name
 
 
-def snp2mkr( SNP, cat_ID ):
+def snp2mkr( SNP, cat_ID, ref_allele, alt_allele, pass_on_5_mkrs = True ):
 
-	chromosome = SNP[0]
-	
-	try: 
-		chr_pos = SNP[1]
-	except IndexError: 
-		print( SNP )
+	new_snp = []
+	for genotypes in SNP: 
+
+		new_geno = genotypes.replace(".", ref_allele, genotypes.count("."))
+
+		new_snp.append(new_geno)
+
+	SNP = new_snp
 
 	mkr_list = []
-
-	p1_raw = SNP[0][0] + SNP[0][-1]
-	p2_raw = SNP[1][0] + SNP[1][-1]
-
+	
 	# Convert the data to 4way here
 	geno_list = ["a", "b", "c", "d"]
 
 	empty_set = set()
 	for genos in SNP:
 
+		if "*" in genos:
+			return "pass"
+
 		empty_set.add(genos[0])
 		empty_set.add(genos[-1])
 
 
+	if "." in empty_set: 
+		empty_set.remove(".")
+
+		print(empty_set)
+
 	if len(empty_set) > 4:
-		print(SNP) 
+		print( SNP ) 
 		print( empty_set )
-		print( "There are 5 alleles at the marker:", chromosome, chr_pos)
 		print( "This pipeline can't really deal with that... so it's quitting. ")
-		quit()
+		return "pass"
+		# quit()
 
 	marker_dict = {}
 	for idx, elements in enumerate(empty_set):
@@ -103,7 +115,8 @@ def snp2mkr( SNP, cat_ID ):
 			if (char == "/") or (char == "|"): 
 				continue
 
-			if (char == ".") or (char == "*"): 
+			# if (char == ".") or (char == "*"):
+			if (char == "*"): 
 				new_mkr = "-"
 				break
 			
@@ -115,7 +128,7 @@ def snp2mkr( SNP, cat_ID ):
 	return new_mkr_list  
 
 
-def this_is_the_way():
+def main(mod_count = 0, debug = False):
 
 	"""This function converts "diploid" SNP data FROM 529L/P60002 parents and progeny 
 		into 4way data for use in recombination_analysis.py """
@@ -127,140 +140,72 @@ def this_is_the_way():
 	path_and_name = arg_list[1] 
 	dir_path, file_name = parse_path( path_and_name )
 
-	if "test" in file_name.lower(): 
-		test = 1
-	else: 
-		test = 0
-		
-	data_file = open( file_name, "r" )
-	data_list = csv_reader( data_file )
+	# CHECK THE PARENTS BEFORE YOU BEGIN!!
+	parent_1 = "MAnderson017_1_R225-2_S31.GT"
+	parent_2 = "MAnderson017_1454_R225-2_S101.GT"
 
-	five29L_cross = []
-	p60002_cross = []
+	five29L_cross = {}
 
 	header = 1
-	for index, snps in enumerate(data_list): 
 
-		# print( snps )
+	with open( path_and_name, "r" ) as data_file:
 
-		chromosome        = snps[0]
-		chr_pos           = snps[1]
-		par_1            = snps[9]
-		five29L           = snps[10]
-		P60002            = snps[11]
-		MAY_103_529L_tet  = snps[12] # SCx529L Tetraploid
-		MAY_316_P600_tet  = snps[13] # SCxP6 Tetraploid
-		MAY_154_529L_prog = snps[14] # SCx529L Progeny
-		MAY_155_529L_prog = snps[15] # SCx529L Progeny
-		MAY_156_529L_prog = snps[16] # SCx529L Progeny
-		MAY_157_529L_prog = snps[17] # SCx529L Progeny
-		MAY_158_529L_prog = snps[18] # SCx529L Progeny
-		MAY_332_P600_prog = snps[19] # SCxP60002 Progeny
-		MAY_333_P600_prog = snps[20] # SCxP60002 Progeny
+		for idx, snps in enumerate(data_file): 
 
-		cat_ID = str(index)
+			snps = snps.strip().split("\t")
+			
+			if header: 
+				header = 0
+				
+				parent_1_idx = snps.index(parent_1)
+				parent_2_idx = snps.index(parent_2)
+				
+				print("Please confirm Parent 1 is index",parent_1_idx, "and Parent 2 is index", parent_2_idx)
+				
+				order_bool = (parent_1_idx < parent_2_idx)
 
-		if "Ca19-mtDNA" in chromosome: 
-			continue
+				if order_bool:
+					five29L_cross["header"] = ["Chromosome", "Chr_Position", "# Catalog ID"] + [snps[parent_1_idx]] + [snps[parent_2_idx]] + snps[9:parent_1_idx] + snps[parent_1_idx+1:parent_2_idx] + snps[parent_2_idx+1:] 
+				else: 
+					five29L_cross["header"] = ["Chromosome", "Chr_Position", "# Catalog ID"] + [snps[parent_1_idx]] + [snps[parent_2_idx]] + snps[9:parent_2_idx] + snps[parent_2_idx+1:parent_1_idx] + snps[parent_1_idx+1:]
 
-		if header: 
-			header = 0
-			# five29L_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[10], snps[12]] + snps[14:19] )
-			five29L_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[10]] + snps[14:19] )
-			p60002_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[11], snps[13]] + snps[19:] )
-			continue
+				continue
 
-		# SCx529L = [ par_1, five29L, MAY_103_529L_tet, MAY_154_529L_prog, MAY_155_529L_prog, \
-		# 											MAY_156_529L_prog, MAY_157_529L_prog, MAY_158_529L_prog ] # Include the tetraploid
+			chromosome = snps[0]
+			chr_pos    = snps[1]
+			par_1      = snps[parent_1_idx]
+			par_2      = snps[parent_2_idx]
 
-		SCx529L = [ par_1, five29L, MAY_154_529L_prog, MAY_155_529L_prog, MAY_156_529L_prog, MAY_157_529L_prog, MAY_158_529L_prog ] # Exclude tetraploid
+			ref_allele = snps[3]
+			alt_allele = snps[4]
 
-		SCxP6   = [ par_1, P60002, MAY_316_P600_tet, MAY_332_P600_prog, MAY_333_P600_prog ]
+			cat_ID = str(idx)
 
-		lists = [SCx529L, SCxP6]
+			# if "Ca19-mtDNA" in chromosome: # I need to include mitochondria
+			# 	continue
 
-		new_mkr = []
-		for cross in lists: 
-			new_mkr.append(snp2mkr(cross, cat_ID))
+			if order_bool: 
+				prog_snps = [snps[parent_1_idx]] + [snps[parent_2_idx]] + snps[9:parent_1_idx] + snps[parent_1_idx+1:parent_2_idx] + snps[parent_2_idx+1:] 
+			else: 
+				prog_snps = [snps[parent_1_idx]] + [snps[parent_2_idx]] + snps[9:parent_2_idx] + snps[parent_2_idx+1:parent_1_idx] + snps[parent_1_idx+1:] 
 
-		new_529L_mkr = [chromosome, chr_pos, cat_ID] + new_mkr[0]
-		new_P6_mkr = [chromosome, chr_pos, cat_ID] + new_mkr[1]
+			new_mkr = snp2mkr(prog_snps, cat_ID, ref_allele, alt_allele)
 
-		five29L_cross.append( new_529L_mkr )
-		p60002_cross.append( new_P6_mkr )
+			mod_count += 1
+			if (debug) and (mod_count % 1000 == 0):
 
-	if test: 
+				print(len(prog_snps), " Input: ", prog_snps)
+				print(len(new_mkr), " Output: ", new_mkr)
 
-		new_5_file = open( "529L_TEST_4way.csv", "w" )
-		# csv_printer( transpose(five29L_cross), new_5_file )
-		csv_printer( five29L_cross, new_5_file )
+			if new_mkr == "pass":
+				continue
 
-		new_P6_file = open( "P600_TEST_4way.csv", "w" )
-		# csv_printer( transpose(p60002_cross), new_P6_file )
-		csv_printer( p60002_cross, new_P6_file )
+			new_529L_mkr = [chromosome, chr_pos, cat_ID] + new_mkr
 
+			five29L_cross[idx] = new_529L_mkr 
 
-	else: 
+	new_5_file = open( dir_path + "prog_4way.csv", "w" )
 
-		new_5_file = open( "wild_isolates_recombination.csv", "w" )
-		# csv_printer( transpose(five29L_cross), new_5_file )
-		csv_printer( five29L_cross, new_5_file )
-
-		# new_P6_file = open( "ltd_P6_4way.csv", "w" )
-		# csv_printer( transpose(p60002_cross), new_P6_file )
-		# csv_printer( p60002_cross, new_P6_file )
-
-
-def main():
-
-	"""This function converts "diploid" SNP data FROM 529L/P60002 parents and progeny 
-		into 4way data for use in recombination_analysis.py """
-
-	arg_list = []
-	for arg in sys.argv:
-		arg_list.append( arg )
-	
-	path_and_name = arg_list[1] 
-	dir_path, file_name = parse_path( path_and_name )
-
-	data_file = open( path_and_name, "r" )
-	data_list = csv_reader( data_file )
-
-	five29L_cross = []
-
-	header = 1
-	for index, snps in enumerate(data_list): 
-
-		chromosome = snps[0]
-		chr_pos    = snps[1]
-		par_1      = snps[9]
-		par_2      = snps[10]
-		prog_1     = snps[11]
-		prog_2 	   = snps[12]
-
-		if "1" in par_1: 
-			print( snps )
-
-		cat_ID = str(index)
-
-		if "Ca19-mtDNA" in chromosome: 
-			continue
-
-		if header: 
-			header = 0
-			five29L_cross.append( ["Chromosome", "Chr_Position", "# Catalog ID", snps[9], snps[10], snps[11], snps[12]] )
-			continue
-
-		cross = [ par_1, par_2, prog_1, prog_2 ]
-
-		new_mkr = snp2mkr(cross, cat_ID)
-
-		new_529L_mkr = [chromosome, chr_pos, cat_ID] + new_mkr
-
-		five29L_cross.append( new_529L_mkr )
-
-	new_5_file = open( dir_path + "WIR2.csv", "w" )
-
-	csv_printer( transpose(five29L_cross), new_5_file )
+	csv_printer( five29L_cross, new_5_file )
 
 main()
